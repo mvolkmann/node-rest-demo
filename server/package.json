@@ -10,9 +10,11 @@
     "dbstop": "pg_ctl -D /usr/local/var/postgres stop -m fast",
     "flow": "flow",
     "format": "prettier-eslint --write 'src/**/*.js'",
+    "jest": "jest build",
     "lint": "eslint --quiet src --ext .js",
     "start": "node build/index.js",
-    "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js"
+    "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
+    "test": "npm-run-all dbsetup build jest"
   },
   "repository": {
     "type": "git",
@@ -50,6 +52,9 @@
     "eslint-plugin-html": "^4.0.3",
     "eslint-plugin-react": "^7.7.0",
     "flow-bin": "^0.71.0",
+    "got": "^8.3.0",
+    "jest": "^22.4.3",
+    "npm-run-all": "^4.1.2",
     "prettier": "^1.12.1"
   }
 }
