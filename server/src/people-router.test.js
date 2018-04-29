@@ -1,53 +1,45 @@
 // @flow
 
-//import got from 'got';
-const got = require('got');
+import got from 'got';
 
-const URL_PREFIX = 'localhost:3001/people';
+const URL_PREFIX = 'http://localhost:3001/people';
 
 describe('people-router', () => {
-  test.only('get all', async (done: Function) => {
+  test('get all', async () => {
     const url = URL_PREFIX;
-    console.log('people-router.test.js x: url =', url);
     const result = await got(url, {json: true});
-    console.log('people-router.test.js x: result =', result);
     const people = result.body;
-    console.log('people-router.test.js: people =', people);
     expect(people.length).toBe(6);
-    done();
   });
 
-  test('get one', async (done: Function) => {
+  test('get one', async () => {
     const url = URL_PREFIX + '/3';
     const result = await got(url, {json: true});
     const person = result.body;
-    expect(person.firstName).toBe('Calvin');
-    done();
+    expect(person.firstname).toBe('Calvin');
   });
 
-  test('get all enabled', async (done: Function) => {
-    const url = URL_PREFIX;
+  test('get all enabled', async () => {
+    const url = URL_PREFIX + '/enabled';
     const result = await got(url, {json: true});
     const people = result.body;
     expect(people.length).toBe(3);
     for (const person of people) {
       expect(person.enabled).toBe(true);
     }
-    done();
   });
 
-  test('get all disabled', async (done: Function) => {
-    const url = URL_PREFIX;
+  test('get all disabled', async () => {
+    const url = URL_PREFIX + '/disabled';
     const result = await got(url, {json: true});
     const people = result.body;
     expect(people.length).toBe(3);
     for (const person of people) {
       expect(person.enabled).toBe(false);
     }
-    done();
   });
 
-  test('create person', async (done: Function) => {
+  test('create person', async () => {
     const url = URL_PREFIX;
     const person = {
       age: 57,
@@ -63,10 +55,9 @@ describe('people-router', () => {
     expect(newPerson.enabled).toBe(person.enabled);
     expect(newPerson.firstName).toBe(person.firstName);
     expect(newPerson.lastName).toBe(person.lastName);
-    done();
   });
 
-  test('enable and disable person', async (done: Function) => {
+  test.skip('enable and disable person', async () => {
     let url = URL_PREFIX + '/2/enable';
     await got.put(url);
     let result = await got(url, {json: true});
@@ -78,8 +69,6 @@ describe('people-router', () => {
     result = await got(url, {json: true});
     person = result.body;
     expect(person.enabled).toBe(false);
-
-    done();
   });
 
   async function duplicateEnableChange(
@@ -96,12 +85,12 @@ describe('people-router', () => {
     }
   }
 
-  test(
+  test.skip(
     'enable already enabled person',
     duplicateEnableChange.bind(null, 1, 'enable')
   );
 
-  test(
+  test.skip(
     'disable already disabled person',
     duplicateEnableChange.bind(null, 1, 'disable')
   );

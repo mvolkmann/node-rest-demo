@@ -1,3 +1,5 @@
 TODO items for this project
 
 * run "flow-typed" to get more Flow type definitions
+* Why are the firstName and lastName database column names
+  all lowercase?  Postgres restriction?

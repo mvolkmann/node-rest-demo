@@ -1,7 +1,7 @@
 // @flow
 
 import bodyParser from 'body-parser';
-import cors from 'cors';
+//import cors from 'cors';
 import express from 'express';
 import healthCheck from 'express-healthcheck';
 import morgan from 'morgan';
@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing
 // so the web server on port 3000 can send
 // requests to the REST server on port 3001.
-app.use(cors());
+//app.use(cors());
 
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
