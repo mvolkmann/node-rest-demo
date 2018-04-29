@@ -29,46 +29,123 @@ export type PersonType = {
 // This maps URLs to handler functions.
 const router = express.Router();
 router.delete('/:id', wrap(deletePerson));
-router.get('/', wrap(getAllPersones));
+router.get('/', wrap(getAllPeople));
+router.get('/disabled', wrap(getAllDisabled));
+router.get('/enabled', wrap(getAllEnabled));
 router.get('/:id', wrap(getPersonById));
 router.post('/', wrap(postPerson));
-router.put('/:id', wrap(putPerson));
+//router.put('/:id', wrap(putPerson));
+router.put('/:id/disable', wrap(disablePerson));
+router.put('/:id/enable', wrap(enablePerson));
 
 const requiredProperties = ['age', 'firstName', 'lastName'];
 
-export function deletePerson(req: express$Request): Promise<void> {
+function deletePerson(req: express$Request): Promise<void> {
   pg.deleteById('people', req.params.id);
   return Promise.resolve(); // allows usage with wrap function
 }
 
-export async function getAllPersones(): Promise<PersonType[]> {
-  const people = await pg.getAll('people');
-  return sortBy(people, ['lastName', 'firstName']);
+async function disablePerson(
+  req: express$Request,
+  res: express$Response
+): Promise<void> {
+  const {id} = req.params;
+
+  const person = await pg.getById('people', id);
+  if (!person.enabled) {
+    res.status(400);
+    throw new Error('disablePerson called on already disabled person');
+  }
+
+  return pg.updateById('people', id, {enabled: false});
 }
 
-export function getPersonById(req: express$Request): Promise<PersonType> {
+async function enablePerson(
+  req: express$Request,
+  res: express$Response
+): Promise<void> {
+  const {id} = req.params;
+
+  const person = await pg.getById('people', id);
+  if (person.enabled) {
+    res.status(400);
+    throw new Error('enablePerson called on already enabled person');
+  }
+
+  return pg.updateById('people', id, {enabled: true});
+}
+
+async function getAllDisabled(): Promise<PersonType[]> {
+  const people = await pg.query(
+    'select * from people where enabled is not true'
+  );
+  return sortPeople(people);
+}
+
+async function getAllEnabled(): Promise<PersonType[]> {
+  const people = await pg.query('select * from people where enabled is true');
+  return sortPeople(people);
+}
+
+async function getAllPeople(): Promise<PersonType[]> {
+  const people = await pg.getAll('people');
+  return sortPeople(people);
+}
+
+function getPersonById(req: express$Request): Promise<PersonType> {
   const {id} = req.params;
   return pg.getById('people', id);
 }
 
-export async function postPerson(req: express$Request): Promise<number> {
+async function postPerson(req: express$Request): Promise<number> {
   const person = castObject(req.body);
-  console.log('people-router.js postPerson: person =', person);
+  validatePerson(person);
+
+  person.id = await pg.insert('people', person);
+  return person;
+}
+
+/* Not needed yet
+async function putPerson(req: express$Request): Promise<void> {
+  const {id} = req.params;
+  const person = ((req.body: any): PersonType);
+  delete person.id;
+  //TODO: Validate the new properties.
+  await pg.updateById('people', id, person);
+}
+*/
+
+function sortPeople(people: PersonType[]): PersonType[] {
+  return sortBy(people, ['lastName', 'firstName']);
+}
+
+/**
+ * Determines whether the first character in a string
+ * is uppercase.
+ */
+function startsUpper(text: string): boolean {
+  return /^[A-Z]/.test(text);
+}
+
+function validatePerson(person: PersonType): void {
   for (const property of requiredProperties) {
     const value = person[property];
     if (!value) {
       throw new Error(`postPerson requires body to have ${property} property`);
     }
   }
-  person.id = await pg.insert('people', person);
-  return person;
-}
 
-export async function putPerson(req: express$Request): Promise<void> {
-  const {id} = req.params;
-  const person = ((req.body: any): PersonType);
-  delete person.id;
-  await pg.updateById('people', id, person);
+  if (!startsUpper(person.firstName)) {
+    throw new Error('firstName must start with an uppercase letter');
+  }
+
+  if (!startsUpper(person.lastName)) {
+    throw new Error('lastName must start with an uppercase letter');
+  }
+
+  if (person.age < 0) {
+    throw new Error('age must be non-negative');
+  }
 }
 
 // This acquires a database connection
