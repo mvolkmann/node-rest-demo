@@ -51,15 +51,17 @@ export function getPersonById(req: express$Request): Promise<PersonType> {
   return pg.getById('people', id);
 }
 
-export function postPerson(req: express$Request): Promise<number> {
+export async function postPerson(req: express$Request): Promise<number> {
   const person = castObject(req.body);
+  console.log('people-router.js postPerson: person =', person);
   for (const property of requiredProperties) {
     const value = person[property];
     if (!value) {
       throw new Error(`postPerson requires body to have ${property} property`);
     }
   }
-  return pg.insert('people', person);
+  person.id = await pg.insert('people', person);
+  return person;
 }
 
 export async function putPerson(req: express$Request): Promise<void> {
@@ -80,6 +82,7 @@ function wrap(handler: HandlerType): HandlerType {
   ) => {
     try {
       let result = await handler(req, res, next);
+      console.log('people-router.js wrap: result =', result);
       // Change numeric results to a string so
       // Express won't think it is an HTTP status code.
       if (typeof result === 'number') result = String(result);

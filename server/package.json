@@ -2,15 +2,17 @@
   "name": "node-rest-demo",
   "version": "1.0.0",
   "description": "Demonstrates implementing REST services with Express",
-  "main": "index.js",
   "scripts": {
+    "build": "babel -q src -d build",
+    "dbi": "psql -d demo",
     "dbsetup": "psql -d demo -f ddl.sql",
     "dbstart": "pg_ctl -D /usr/local/var/postgres start",
     "dbstop": "pg_ctl -D /usr/local/var/postgres stop -m fast",
     "flow": "flow",
     "format": "prettier-eslint --write 'src/**/*.js'",
     "lint": "eslint --quiet src --ext .js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node build/index.js",
+    "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js"
   },
   "repository": {
     "type": "git",
@@ -37,7 +39,12 @@
     "postgresql-easy": "^1.2.4"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-watch": "^2.0.7",
     "eslint": "^4.19.1",
     "eslint-plugin-flowtype": "^2.46.3",
     "eslint-plugin-html": "^4.0.3",
