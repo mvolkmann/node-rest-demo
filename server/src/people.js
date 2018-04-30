@@ -6,11 +6,11 @@ export type PersonType = {
   age: number,
   enabled: boolean,
   id: number,
-  firstName: string,
-  lastName: string
+  firstname: string,
+  lastname: string
 };
 
-const requiredProperties = ['age', 'firstName', 'lastName'];
+const requiredProperties = ['age', 'firstname', 'lastname'];
 
 function startsUpper(text: string): boolean {
   return /^[A-Z]/.test(text);
@@ -23,13 +23,13 @@ export function validatePerson(person: PersonType): void {
   }
 
   throwIf(
-    !startsUpper(person.firstName),
-    'firstName must start with an uppercase letter'
+    !startsUpper(person.firstname),
+    'firstname must start with an uppercase letter'
   );
 
   throwIf(
-    !startsUpper(person.lastName),
-    'lastName must start with an uppercase letter'
+    !startsUpper(person.lastname),
+    'lastname must start with an uppercase letter'
   );
 
   throwIf(person.age < 0, 'age must be non-negative');

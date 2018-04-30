@@ -44,8 +44,8 @@ describe('people-router', () => {
     const person = {
       age: 57,
       enabled: false,
-      firstName: 'Mark',
-      lastName: 'Volkmann'
+      firstname: 'Mark',
+      lastname: 'Volkmann'
     };
     const result = await got.post(url, {body: person, json: true});
     const newPerson = result.body;
@@ -53,20 +53,18 @@ describe('people-router', () => {
     expect(id).toBeGreaterThan(0);
     expect(newPerson.age).toBe(person.age);
     expect(newPerson.enabled).toBe(person.enabled);
-    expect(newPerson.firstName).toBe(person.firstName);
-    expect(newPerson.lastName).toBe(person.lastName);
+    expect(newPerson.firstname).toBe(person.firstname);
+    expect(newPerson.lastname).toBe(person.lastname);
   });
 
-  test.skip('enable and disable person', async () => {
-    let url = URL_PREFIX + '/2/enable';
-    await got.put(url);
-    let result = await got(url, {json: true});
+  test('enable and disable person', async () => {
+    await got.put(URL_PREFIX + '/2/enable');
+    let result = await got(URL_PREFIX + '/2', {json: true});
     let person = result.body;
     expect(person.enabled).toBe(true);
 
-    url = URL_PREFIX + '/2/disable';
-    await got.put(url);
-    result = await got(url, {json: true});
+    await got.put(URL_PREFIX + '/2/disable');
+    result = await got(URL_PREFIX + '/2', {json: true});
     person = result.body;
     expect(person.enabled).toBe(false);
   });
@@ -85,14 +83,14 @@ describe('people-router', () => {
     }
   }
 
-  test.skip(
+  test(
     'enable already enabled person',
     duplicateEnableChange.bind(null, 1, 'enable')
   );
 
-  test.skip(
+  test(
     'disable already disabled person',
-    duplicateEnableChange.bind(null, 1, 'disable')
+    duplicateEnableChange.bind(null, 2, 'disable')
   );
 
   test('create person with invalid age', async (done: Function) => {
@@ -100,8 +98,8 @@ describe('people-router', () => {
     const person = {
       age: -57,
       enabled: false,
-      firstName: 'Mark',
-      lastName: 'Volkmann'
+      firstname: 'Mark',
+      lastname: 'Volkmann'
     };
     try {
       await got.post(url, {body: person, json: true});
@@ -116,8 +114,8 @@ describe('people-router', () => {
     const person = {
       age: 57,
       enabled: false,
-      firstName: 'mark',
-      lastName: 'Volkmann'
+      firstname: 'mark',
+      lastname: 'Volkmann'
     };
     try {
       await got.post(url, {body: person, json: true});
@@ -132,8 +130,8 @@ describe('people-router', () => {
     const person = {
       age: 57,
       enabled: false,
-      firstName: 'Mark',
-      lastName: 'volkmann'
+      firstname: 'Mark',
+      lastname: 'volkmann'
     };
     try {
       await got.post(url, {body: person, json: true});

@@ -3,11 +3,11 @@ create table people (
   id serial primary key,
   age int not null, -- non-negative
   enabled bool not null,
-  firstName text not null, -- must begin upper
-  lastName text not null -- must begin upper
+  firstname text not null, -- must begin upper
+  lastname text not null -- must begin upper
 );
 
-insert into people (age, enabled, firstName, lastName) values
+insert into people (age, enabled, firstname, lastname) values
   (10, true, 'Abe', 'Arnold'),
   (11, false, 'Ben', 'Bowser'),
   (12, true, 'Calvin', 'Cool'),
