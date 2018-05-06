@@ -9,6 +9,19 @@ export function setupAuthentication(
   app: express$Application,
   users: UsersType
 ): void {
+  app.use(
+    expressSession({
+      secret: 'my session secret', //TODO: Need to hide this?
+      resave: true, //TODO: What does this do?
+      saveUninitialized: true //TODO: What does this do?
+    })
+  );
+
+  app.get('/login-fail', (req: express$Request, res: express$Response) => {
+    res.status(401);
+    res.send('invalid username or password');
+  });
+
   //TODO: Change this to use Postgres to authenticate users.
   //TODO: Use some hashing algorithm to store and check passwords.
   const strategy = new LocalStrategy((username, password, done) => {
@@ -20,22 +33,8 @@ export function setupAuthentication(
   passport.use(strategy);
   passport.serializeUser((user, done) => done(null, user.username));
   passport.deserializeUser((username, done) => done(null, users[username]));
-
-  app.use(
-    expressSession({
-      secret: 'my session secret', //TODO: Need to hide this?
-      resave: true, //TODO: What does this do?
-      saveUninitialized: true //TODO: What does this do?
-    })
-  );
-
   app.use(passport.initialize());
   app.use(passport.session());
-
-  app.get('/login-fail', (req: express$Request, res: express$Response) => {
-    res.status(401);
-    res.send('invalid username or password');
-  });
 
   return passport.authenticate('local', {
     //TODO: Probably need to make these configurable.

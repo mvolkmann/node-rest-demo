@@ -52,10 +52,15 @@ export function getRouter(can: CanFnType) {
   router.get('/', wrap(getAllPeople));
 
   route('delete', '/:id', can('delete person'), wrap(deletePerson2));
-  route('get', '/:id', can('get specific person'), wrap(getPersonById2));
+
   route('get', '/disabled', can('get all disabled'), wrap(getAllDisabled));
   route('get', '/enabled', can('get all enabled'), wrap(getAllEnabled));
+  // This route must follow the previous two or those won't work
+  // because it will treat "disabled" and "enabled" as ids.
+  route('get', '/:id', can('get specific person'), wrap(getPersonById2));
+
   route('post', '/', can('create new person'), wrap(createPerson2));
+
   route('put', '/:id/disable', can('disable person'), wrap(disablePerson2));
   route('put', '/:id/enable', can('enable person'), wrap(enablePerson2));
 
