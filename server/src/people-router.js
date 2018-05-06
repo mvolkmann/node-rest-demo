@@ -3,7 +3,6 @@
 import express from 'express';
 import {wrap} from './util/error-util';
 import {castObject} from './util/flow-util';
-import PgConnection from 'postgresql-easy';
 import {
   createPerson,
   deletePerson,
@@ -17,9 +16,6 @@ import {
 
 // eslint-disable-next-line no-duplicate-imports
 import type {PersonType} from './people';
-
-const config = {database: 'demo'};
-const pg = new PgConnection(config);
 
 async function createPerson2(
   req: express$Request,
