@@ -27,9 +27,8 @@ export function setupAuthorization(
 
   Object.entries(actions).forEach(([action: string, roles: string[]]): void => {
     user.use(action, req => {
-      const theRole: string = req.user.role;
-      // $FlowFixMe - What?
-      if (roles.includes(theRole)) return true;
+      const userRoles: string = req.user.roles;
+      if (userRoles.some(userRole => roles.includes(userRole))) return true;
     });
   });
 

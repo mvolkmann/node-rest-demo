@@ -4,7 +4,7 @@ export type ActionToRolesMapType = {[action: string]: string[]};
 
 export type UserType = {
   password: string,
-  role: string,
+  roles: string[],
   username: string
 };
 

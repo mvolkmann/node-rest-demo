@@ -2,11 +2,11 @@
   "mvolkmann": {
     "username": "mvolkmann",
     "password": "p1",
-    "role": "normal"
+    "roles": ["normal"]
   },
   "jbrown": {
     "username": "jbrown",
     "password": "p2",
-    "role": "admin"
+    "roles": ["admin"]
   }
 }

@@ -40,6 +40,7 @@ export const getPersonById = (id: string): Promise<PersonType> =>
 
 async function validateEnabled(id: string, want: boolean) {
   const person = await pg.getById('people', id);
+  if (!person) throw new Error('no person with id ' + id);
   if (person.enabled !== want) {
     const kind = want ? 'disable' : 'enable';
     throw new Error(`cannot ${kind} a person already ${kind}d`);
