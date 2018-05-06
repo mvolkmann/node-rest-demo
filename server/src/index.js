@@ -8,6 +8,10 @@ import morgan from 'morgan';
 import {setupAuthentication} from './authentication';
 import {setupAuthorization} from './authorization';
 import {getRouter} from './people-router';
+import actions from '../actions.json';
+
+//TODO: Get these from the database.
+import users from '../users.json';
 
 const app = express();
 
@@ -17,18 +21,18 @@ const app = express();
 app.use(morgan('dev'));
 
 // Enable cross-origin resource sharing
-// so the web server on port 3000 can send
-// requests to the REST server on port 3001.
+// so the web server on another port can send
+// requests to this REST server on a different port.
 //import cors from 'cors';
 //app.use(cors());
 
-const auth = setupAuthentication(app);
-const user = setupAuthorization(app);
-
-const peopleRouter = getRouter(user);
-
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
+
+const auth = setupAuthentication(app, users);
+const can = setupAuthorization(app, actions);
+
+const peopleRouter = getRouter(can);
 
 // Parse JSON request bodGies to JavaScript objects.
 app.use(bodyParser.json());
@@ -39,7 +43,6 @@ app.use(bodyParser.text());
 // $FlowFixMe
 app.post('/login', auth, (req: express$Request, res: express$Response) => {
   // This is called when authentication is successful.
-  console.log('index.js login: req.body =', req.body);
 
   // `req.user` contains the authenticated user.
   //TODO: How does this differ from successRedirect above?
@@ -49,17 +52,11 @@ app.post('/login', auth, (req: express$Request, res: express$Response) => {
   res.send('success');
 });
 
-app.get('/login-fail', (req: express$Request, res: express$Response) => {
-  res.status(401);
-  res.send('invalid username or password');
-});
-
 // This route is not protected.
 app.get('/pid', (req: express$Request, res: express$Response) =>
   res.send(String(process.pid))
 );
 
-// Authorization checks are inside this router.
 app.use('/people', peopleRouter);
 
 // This route is not protected.

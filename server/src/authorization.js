@@ -1,14 +1,16 @@
 // @flow
 
 import ConnectRoles from 'connect-roles';
-import actions from '../actions.json';
+import type {ActionToRolesMapType} from './types';
 
-export function setupAuthorization(app: express$Application) {
+export function setupAuthorization(
+  app: express$Application,
+  actions: ActionToRolesMapType
+) {
   const user = new ConnectRoles({
     failureHandler(req, res, action) {
       // This is optional to customise what happens
       // when user authorization (not authentication) is denied.
-      console.log('index.js ConnectRoles: action =', action);
       res.status(403);
       res.send(`Access Denied - cannot ${action}`);
     }
@@ -16,10 +18,10 @@ export function setupAuthorization(app: express$Application) {
 
   app.use(user.middleware());
 
-  // Anonymous users can only get a list of all people.
-  // Returning false stops any more rules from being considered.
+  // Users that haven't authenticated can only "get all people".
+  // Returning false stops any more rules from being considered,
+  // so don't do that.
   user.use((req, action) => {
-    console.log('index.js authorization: action =', action);
     if (!req.isAuthenticated()) return action === 'get all people';
   });
 
@@ -31,5 +33,7 @@ export function setupAuthorization(app: express$Application) {
     });
   });
 
-  return user;
+  // Caller should use this function in route configurations
+  // to verify authorization to perform specific actions.
+  return user.can.bind(user);
 }

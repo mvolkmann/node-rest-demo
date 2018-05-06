@@ -22,49 +22,24 @@ async function createPerson2(
   res: express$Response
 ): Promise<void> {
   const person = castObject(req.body);
-  try {
-    res.send(await createPerson(person));
-  } catch (e) {
-    res.status(400);
-    res.send(e.message);
-  }
+  res.send(await createPerson(person));
 }
 
 const deletePerson2 = (req: express$Request): Promise<void> =>
   deletePerson(req.params.id);
 
-async function disablePerson2(
-  req: express$Request,
-  res: express$Response
-): Promise<void> {
-  try {
-    await disablePerson(req.params.id);
-  } catch (e) {
-    res.status(400);
-    res.send(e.message);
-  }
-}
+const disablePerson2 = (req: express$Request): Promise<void> =>
+  disablePerson(req.params.id);
 
-async function enablePerson2(
-  req: express$Request,
-  res: express$Response
-): Promise<void> {
-  try {
-    await enablePerson(req.params.id);
-  } catch (e) {
-    res.status(400);
-    res.send(e.message);
-  }
-}
+const enablePerson2 = (req: express$Request): Promise<void> =>
+  enablePerson(req.params.id);
 
 const getPersonById2 = (req: express$Request): Promise<PersonType> =>
   getPersonById(req.params.id);
 
-type UserAuthType = {
-  can(role: string): boolean
-};
+type CanFnType = (action: string) => boolean;
 
-export function getRouter(user: UserAuthType) {
+export function getRouter(can: CanFnType) {
   // This maps URLs to handler functions.
   const router = express.Router();
 
@@ -76,18 +51,13 @@ export function getRouter(user: UserAuthType) {
   // All authenticated users can do this.
   router.get('/', wrap(getAllPeople));
 
-  route('get', '/disabled', user.can('get all disabled'), wrap(getAllDisabled));
-  route('get', '/enabled', user.can('get all enabled'), wrap(getAllEnabled));
-  route('delete', '/:id', user.can('delete person'), wrap(deletePerson2));
-  route('get', '/:id', user.can('get specific person'), wrap(getPersonById2));
-  route('post', '/', user.can('create new person'), wrap(createPerson2));
-  route(
-    'put',
-    '/:id/disable',
-    user.can('disable person'),
-    wrap(disablePerson2)
-  );
-  route('put', '/:id/enable', user.can('enable person'), wrap(enablePerson2));
+  route('delete', '/:id', can('delete person'), wrap(deletePerson2));
+  route('get', '/:id', can('get specific person'), wrap(getPersonById2));
+  route('get', '/disabled', can('get all disabled'), wrap(getAllDisabled));
+  route('get', '/enabled', can('get all enabled'), wrap(getAllEnabled));
+  route('post', '/', can('create new person'), wrap(createPerson2));
+  route('put', '/:id/disable', can('disable person'), wrap(disablePerson2));
+  route('put', '/:id/enable', can('enable person'), wrap(enablePerson2));
 
   return router;
 }

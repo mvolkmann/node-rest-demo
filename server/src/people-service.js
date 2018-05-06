@@ -17,12 +17,14 @@ export const deletePerson = (id: string): Promise<void> =>
 
 export async function disablePerson(id: string): Promise<void> {
   await validateEnabled(id, true);
-  return pg.updateById('people', id, {enabled: false});
+  // await on next line instead of return avoids returning an empty JSON array.
+  await pg.updateById('people', id, {enabled: false});
 }
 
 export async function enablePerson(id: string): Promise<void> {
   await validateEnabled(id, false);
-  return pg.updateById('people', id, {enabled: true});
+  // await on next line instead of return avoids returning an empty JSON array.
+  await pg.updateById('people', id, {enabled: true});
 }
 
 export const getAllDisabled = (): Promise<PersonType[]> =>

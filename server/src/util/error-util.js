@@ -37,6 +37,7 @@ export function wrap(handler: HandlerType): HandlerType {
       // Change numeric results to a string so
       // Express won't think it is an HTTP status code.
       if (typeof result === 'number') result = String(result);
+      console.log('error-util.js wrap: result =', result);
       res.send(result);
     } catch (e) {
       errorHandler(next, e);
