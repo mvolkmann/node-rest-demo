@@ -107,11 +107,15 @@ const auth = passport.authenticate('local', {
 
 // $FlowFixMe
 app.post('/login', auth, (req: express$Request, res: express$Response) => {
-  console.log('index.js login: req.body =', req.body);
   // This is called when authentication is successful.
+  console.log('index.js login: req.body =', req.body);
+
   // `req.user` contains the authenticated user.
-  //res.redirect('/pid'); //TODO: How does this differ from successRedirect above?
-  res.send('success'); //TODO: Probably don't want redirect instead of this.
+  //TODO: How does this differ from successRedirect above?
+  //res.redirect('/pid');
+
+  //TODO: Probably don't want redirect instead of this.
+  res.send('success');
 });
 
 app.get('/login-fail', (req: express$Request, res: express$Response) => {
