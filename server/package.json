@@ -11,6 +11,7 @@
     "flow": "flow",
     "format": "prettier-eslint --write 'src/**/*.js'",
     "jest": "jest build",
+    "lb": "pm2 start build/index.js -i -1",
     "lint": "eslint --quiet src --ext .js",
     "start": "node build/index.js",
     "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
@@ -34,10 +35,14 @@
   "homepage": "https://github.com/mvolkmann/node-rest-demo#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "connect-roles": "^3.1.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-healthcheck": "^0.1.0",
+    "express-session": "^1.15.6",
     "morgan": "^1.9.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "postgresql-easy": "^1.2.4"
   },
   "devDependencies": {
@@ -55,6 +60,7 @@
     "got": "^8.3.0",
     "jest": "^22.4.3",
     "npm-run-all": "^4.1.2",
+    "pm2": "^2.10.3",
     "prettier": "^1.12.1"
   }
 }

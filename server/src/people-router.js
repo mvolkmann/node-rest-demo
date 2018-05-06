@@ -1,12 +1,13 @@
 // @flow
 
 import express from 'express';
-const PgConnection = require('postgresql-easy');
-
+import {validatePerson} from './people';
 import {wrap} from './util/error-util';
 import {castObject} from './util/flow-util';
+const PgConnection = require('postgresql-easy');
 
-import {type PersonType, validatePerson} from './people';
+// eslint-disable-next-line no-duplicate-imports
+import type {PersonType} from './people';
 
 const config = {database: 'demo'};
 const pg = new PgConnection(config);
@@ -63,14 +64,32 @@ async function validateEnabled(
   }
 }
 
-// This maps URLs to handler functions.
-const router = express.Router();
-router.delete('/:id', wrap(deletePerson));
-router.get('/', wrap(getAllPeople));
-router.get('/disabled', wrap(getAllDisabled));
-router.get('/enabled', wrap(getAllEnabled));
-router.get('/:id', wrap(getPersonById));
-router.post('/', wrap(postPerson));
-router.put('/:id/disable', wrap(disablePerson));
-router.put('/:id/enable', wrap(enablePerson));
-export default router;
+type UserType = {
+  can(role: string): boolean
+};
+
+export function getRouter(user: UserType) {
+  // This maps URLs to handler functions.
+  const router = express.Router();
+
+  function route(method: string, path: string, can: boolean, handler) {
+    // $FlowFixMe - Doesn't like use of "can".
+    router[method](path, can, handler);
+  }
+
+  // All authenticated users can do this.
+  router.get('/', wrap(getAllPeople));
+
+  // Only authenticated "normal" users can use these services.
+  route('get', '/disabled', user.can('normal'), wrap(getAllDisabled));
+  route('get', '/enabled', user.can('normal'), wrap(getAllEnabled));
+
+  // Only authenticated "admin" users can use these services.
+  route('delete', '/:id', user.can('admin'), wrap(deletePerson));
+  route('get', '/:id', user.can('admin'), wrap(getPersonById));
+  route('post', '/', user.can('admin'), wrap(postPerson));
+  route('put', '/:id/disable', user.can('admin'), wrap(disablePerson));
+  route('put', '/:id/enable', user.can('admin'), wrap(enablePerson));
+
+  return router;
+}
