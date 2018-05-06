@@ -1,18 +1,7 @@
 // @flow
 
-const ConnectRoles = require('connect-roles');
-import type {ActionToRolesMapType} from './types';
-
-const actionToRolesMap: ActionToRolesMapType = {
-  'create new person': ['admin'],
-  'delete person': ['admin'],
-  'disable person': ['admin'],
-  'enable person': ['admin'],
-  'get all disabled': ['normal', 'admin'],
-  'get all enabled': ['normal', 'admin'],
-  'get specific person': ['normal', 'admin']
-};
-// No specific role is needed to get all people.
+import ConnectRoles from 'connect-roles';
+import actions from '../actions.json';
 
 export function setupAuthorization(app: express$Application) {
   const user = new ConnectRoles({
@@ -34,15 +23,13 @@ export function setupAuthorization(app: express$Application) {
     if (!req.isAuthenticated()) return action === 'get all people';
   });
 
-  Object.entries(actionToRolesMap).forEach(
-    ([action: string, roles: string[]]): void => {
-      user.use(action, req => {
-        const theRole: string = req.user.role;
-        // $FlowFixMe - What?
-        if (roles.includes(theRole)) return true;
-      });
-    }
-  );
+  Object.entries(actions).forEach(([action: string, roles: string[]]): void => {
+    user.use(action, req => {
+      const theRole: string = req.user.role;
+      // $FlowFixMe - What?
+      if (roles.includes(theRole)) return true;
+    });
+  });
 
   return user;
 }

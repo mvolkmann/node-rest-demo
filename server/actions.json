@@ -1,0 +1,9 @@
+{
+  "create new person": ["admin"],
+  "delete person": ["admin"],
+  "disable person": ["admin"],
+  "enable person": ["admin"],
+  "get all disabled": ["normal", "admin"],
+  "get all enabled": ["normal", "admin"],
+  "get specific person": ["normal", "admin"]
+}

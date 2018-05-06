@@ -2,13 +2,10 @@
 
 import expressSession from 'express-session';
 import passport from 'passport';
-import type {UsersType} from './types';
+//import type {UsersType} from './types';
 import {Strategy as LocalStrategy} from 'passport-local';
 
-const users: UsersType = {
-  mvolkmann: {username: 'mvolkmann', password: 'p1', role: 'normal'},
-  jbrown: {username: 'jbrown', password: 'p2', role: 'admin'}
-};
+import users from '../users.json';
 
 export function setupAuthentication(app: express$Application): void {
   const strategy = new LocalStrategy((username, password, done) => {
@@ -23,7 +20,7 @@ export function setupAuthentication(app: express$Application): void {
 
   app.use(
     expressSession({
-      secret: 'what is this?',
+      secret: 'my session secret',
       resave: true,
       saveUninitialized: true
     })
