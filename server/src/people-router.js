@@ -80,16 +80,13 @@ export function getRouter(user: UserType) {
   // All authenticated users can do this.
   router.get('/', wrap(getAllPeople));
 
-  // Only authenticated "normal" users can use these services.
-  route('get', '/disabled', user.can('normal'), wrap(getAllDisabled));
-  route('get', '/enabled', user.can('normal'), wrap(getAllEnabled));
-
-  // Only authenticated "admin" users can use these services.
-  route('delete', '/:id', user.can('admin'), wrap(deletePerson));
-  route('get', '/:id', user.can('admin'), wrap(getPersonById));
-  route('post', '/', user.can('admin'), wrap(postPerson));
-  route('put', '/:id/disable', user.can('admin'), wrap(disablePerson));
-  route('put', '/:id/enable', user.can('admin'), wrap(enablePerson));
+  route('get', '/disabled', user.can('get all disabled'), wrap(getAllDisabled));
+  route('get', '/enabled', user.can('get all enabled'), wrap(getAllEnabled));
+  route('delete', '/:id', user.can('delete person'), wrap(deletePerson));
+  route('get', '/:id', user.can('get specific person'), wrap(getPersonById));
+  route('post', '/', user.can('create new person'), wrap(postPerson));
+  route('put', '/:id/disable', user.can('disable person'), wrap(disablePerson));
+  route('put', '/:id/enable', user.can('enable person'), wrap(enablePerson));
 
   return router;
 }

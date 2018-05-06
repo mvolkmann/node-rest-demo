@@ -10,10 +10,28 @@ import {Strategy as LocalStrategy} from 'passport-local';
 import {getRouter} from './people-router';
 const ConnectRoles = require('connect-roles');
 
+import type {ActionToRolesMapType, UsersType} from './types';
+
+const users: UsersType = {
+  mvolkmann: {username: 'mvolkmann', password: 'p1', role: 'normal'},
+  jbrown: {username: 'jbrown', password: 'p2', role: 'admin'}
+};
+
+const actionToRolesMap: ActionToRolesMapType = {
+  'create new person': ['admin'],
+  'delete person': ['admin'],
+  'disable person': ['admin'],
+  'enable person': ['admin'],
+  'get all disabled': ['normal', 'admin'],
+  'get all enabled': ['normal', 'admin'],
+  'get specific person': ['normal', 'admin']
+};
+// No specific role is needed to get all people.
+
 const app = express();
 
 // Is this needed by Passport to return authorization issues?
-app.set('view engine', 'html');
+//app.set('view engine', 'html');
 
 // This causes logging of all HTTP requests to be written to stdout.
 // The provided options are combined, common, dev, short, and tiny.
@@ -25,12 +43,6 @@ app.use(morgan('dev'));
 // requests to the REST server on port 3001.
 //import cors from 'cors';
 //app.use(cors());
-
-//TODO: How are user roles supposed to be specified?
-const users = {
-  mvolkmann: {username: 'mvolkmann', password: 'p1', role: 'normal'},
-  jbrown: {username: 'jbrown', password: 'p2', role: 'admin'}
-};
 
 const strategy = new LocalStrategy((username, password, done) => {
   const user = users[username];
@@ -46,13 +58,9 @@ const user = new ConnectRoles({
   failureHandler(req, res, action) {
     // This is optional to customise what happens
     // when user authorization (not authentication) is denied.
-    const accept = req.headers.accept || '';
+    console.log('index.js ConnectRoles: action =', action);
     res.status(403);
-    if (accept.includes('html')) {
-      res.send("Access Denied - You don't have permission to: " + action);
-    } else {
-      res.render('access-denied', {action});
-    }
+    res.send(`Access Denied - cannot ${action}`);
   }
 });
 
@@ -76,18 +84,15 @@ user.use((req, action) => {
   if (!req.isAuthenticated()) return action === 'get all people';
 });
 
-// "normal" role users can access all services
-// except those reserved for "admin" role users.
-// To support other roles, don't return false
-// for other kinds of users.
-user.use('normal', req => {
-  if (req.user.role === 'normal') return true;
-});
-
-// admin users can access all pages.
-user.use('admin', req => {
-  if (req.user.role === 'admin') return true;
-});
+Object.entries(actionToRolesMap).forEach(
+  ([action: string, roles: string[]]): void => {
+    user.use(action, req => {
+      const theRole: string = req.user.role;
+      // $FlowFixMe - What?
+      if (roles.includes(theRole)) return true;
+    });
+  }
+);
 
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
