@@ -14,55 +14,47 @@ import {
   getPersonById
 } from './people-service';
 
-// eslint-disable-next-line no-duplicate-imports
-import type {PersonType} from './people';
-
-async function createPerson2(
-  req: express$Request,
-  res: express$Response
-): Promise<void> {
-  const person = castObject(req.body);
-  res.send(await createPerson(person));
-}
-
-const deletePerson2 = (req: express$Request): Promise<void> =>
-  deletePerson(req.params.id);
-
-const disablePerson2 = (req: express$Request): Promise<void> =>
-  disablePerson(req.params.id);
-
-const enablePerson2 = (req: express$Request): Promise<void> =>
-  enablePerson(req.params.id);
-
-const getPersonById2 = (req: express$Request): Promise<PersonType> =>
-  getPersonById(req.params.id);
-
 type CanFnType = (action: string) => boolean;
 
 export function getRouter(can: CanFnType) {
-  // This maps URLs to handler functions.
   const router = express.Router();
 
-  function route(method: string, path: string, can: boolean, handler) {
-    // $FlowFixMe - Doesn't like use of "can".
-    router[method](path, can, handler);
+  function route(method: string, path: string, action: string, handler) {
+    router[method](path, can(action), wrap(handler));
   }
 
   // All authenticated users can do this.
-  router.get('/', wrap(getAllPeople));
+  //router.get('/', wrap(getAllPeople));
 
-  route('delete', '/:id', can('delete person'), wrap(deletePerson2));
+  route('get', '/', 'get all people', () => {
+    console.log('people-router.js get all people: entered');
+    return getAllPeople();
+  });
 
-  route('get', '/disabled', can('get all disabled'), wrap(getAllDisabled));
-  route('get', '/enabled', can('get all enabled'), wrap(getAllEnabled));
+  route('delete', '/:id', 'delete person', req => deletePerson(req.params.id));
+
+  route('get', '/disabled', 'get all disabled', req =>
+    getAllDisabled(req.params.id)
+  );
+
+  route('get', '/enabled', 'get all enabled', req =>
+    getAllEnabled(req.params.id)
+  );
+
   // This route must follow the previous two or those won't work
   // because it will treat "disabled" and "enabled" as ids.
-  route('get', '/:id', can('get specific person'), wrap(getPersonById2));
+  route('get', '/:id', 'get specific person', req =>
+    getPersonById(req.params.id)
+  );
 
-  route('post', '/', can('create new person'), wrap(createPerson2));
+  route('post', '/', 'create new person', (req, res) => createPerson(req.body));
 
-  route('put', '/:id/disable', can('disable person'), wrap(disablePerson2));
-  route('put', '/:id/enable', can('enable person'), wrap(enablePerson2));
+  route('put', '/:id/disable', 'disable person', req =>
+    disablePerson(req.params.id)
+  );
+  route('put', '/:id/enable', 'enable person', req =>
+    enablePerson(req.params.id)
+  );
 
   return router;
 }

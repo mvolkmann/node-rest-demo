@@ -7,7 +7,8 @@ import morgan from 'morgan';
 
 import {setupAuthentication} from './authentication';
 import {setupAuthorization} from './authorization';
-import {getRouter} from './people-router';
+import {getRouter as getPeopleRouter} from './people-router';
+import {getRouter as getUserRouter} from './user-router';
 import actions from '../actions.json';
 
 //TODO: Get these from the database.
@@ -32,7 +33,8 @@ app.use(morgan('dev'));
 const auth = setupAuthentication(app, users);
 const can = setupAuthorization(app, actions);
 
-const peopleRouter = getRouter(can);
+const peopleRouter = getPeopleRouter(can);
+const userRouter = getUserRouter(can);
 
 // Parse JSON request bodGies to JavaScript objects.
 app.use(bodyParser.json());
@@ -58,6 +60,7 @@ app.get('/pid', (req: express$Request, res: express$Response) =>
 );
 
 app.use('/people', peopleRouter);
+app.use('/user', userRouter);
 
 // This route is not protected.
 // To get uptime of server, browse localhost:3001.

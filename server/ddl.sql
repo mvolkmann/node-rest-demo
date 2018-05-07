@@ -1,3 +1,14 @@
+-- "user" is a reserved keyword in PostgreSQL.
+drop table if exists app_user;
+create table app_user (
+  id serial primary key,
+  username text,
+  passwordHash text not null -- bcrypt
+);
+
+--TODO: What is the correct syntax?
+--create index table app_users column username;
+
 drop table if exists people;
 create table people (
   id serial primary key,

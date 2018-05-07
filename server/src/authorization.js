@@ -18,16 +18,20 @@ export function setupAuthorization(
 
   app.use(user.middleware());
 
-  // Users that haven't authenticated can only "get all people".
+  // Regardless of whether the user has authenticated,
+  // they can "get all people".
   // Returning false stops any more rules from being considered,
   // so don't do that.
   user.use((req, action) => {
-    if (!req.isAuthenticated()) return action === 'get all people';
+    if (action === 'get all people') return true;
   });
 
   Object.entries(actions).forEach(([action: string, roles: string[]]): void => {
     user.use(action, req => {
-      const userRoles: string = req.user.roles;
+      console.log('authorization.js x: action =', action);
+      console.log('authorization.js x: roles =', roles);
+      const userRoles = req.user.roles;
+      console.log('authorization.js x: userRoles =', userRoles);
       if (userRoles.some(userRole => roles.includes(userRole))) return true;
     });
   });
