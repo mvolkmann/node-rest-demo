@@ -2,8 +2,9 @@
 drop table if exists app_user;
 create table app_user (
   id serial primary key,
-  username text,
-  passwordHash text not null -- bcrypt
+  passwordHash text not null, -- bcrypt
+  roles text[],
+  username text
 );
 
 --TODO: What is the correct syntax?

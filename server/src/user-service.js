@@ -11,14 +11,13 @@ const TABLE = 'app_user';
 
 export async function createUser(inUser: UserType): Promise<UserType> {
   const passwordHash = await encrypt(inUser.password);
-  const outUser: UserType = {
-    id: '',
-    password: passwordHash,
-    roles: [],
+  const outUser = {
+    passwordHash,
+    //roles: [],
     username: inUser.username
   };
-  outUser.id = await pg.insert(TABLE, outUser);
-  return outUser;
+  const id = await pg.insert(TABLE, outUser);
+  return {id, ...inUser};
 }
 
 export const deleteUser = (userId: number): Promise<void> =>
