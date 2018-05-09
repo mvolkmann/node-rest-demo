@@ -7,6 +7,11 @@ export function cast<T>(value: mixed, _: T): T {
   return ((value: any): T);
 }
 
+// This performs Flow type casting of a value to a number.
+export function castNumber(value: mixed): number {
+  return ((value: any): number);
+}
+
 // This performs Flow type casting of a value to an Object.
 export function castObject(value: mixed): Object {
   return ((value: any): Object);

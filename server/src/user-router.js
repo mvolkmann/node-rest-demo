@@ -2,22 +2,8 @@
 
 import express from 'express';
 import {wrap} from './util/error-util';
-import {castObject} from './util/flow-util';
-import {createUser, deleteUser, validatePassword} from './people-service';
-
-async function createUser2(
-  req: express$Request,
-  res: express$Response
-): Promise<void> {
-  const user = castObject(req.body);
-  res.send(await createUser(user));
-}
-
-const deleteUser2 = (req: express$Request): Promise<void> =>
-  deleteUser(req.params.id);
-
-const validatePassword2 = (req: express$Request): Promise<PersonType> =>
-  validatePassword(req.params.username, req.params.password);
+import {castNumber, castObject} from './util/flow-util';
+import {createUser, deleteUser, validatePassword} from './user-service';
 
 type CanFnType = (action: string) => boolean;
 
@@ -25,15 +11,22 @@ export function getRouter(can: CanFnType) {
   // This maps URLs to handler functions.
   const router = express.Router();
 
-  function route(method: string, path: string, can: boolean, handler) {
-    router[method](path, can, handler);
+  function route(method: string, path: string, action: string, handler) {
+    // $FlowFixMe - doesn't like calling a computed method
+    router[method](path, can(action), wrap(handler));
   }
 
-  // All users can do this.
-  router.get('/', wrap(validatePassword2));
-
-  route('delete', '/:id', can('delete user'), wrap(deleteUser2));
-  route('post', '/', can('create user'), wrap(createUser2));
+  route('get', '/', 'validate password', req =>
+    validatePassword(req.params.username, req.params.password)
+  );
+  route('delete', '/:id', 'delete user', req =>
+    deleteUser(castNumber(req.params.id))
+  );
+  route('post', '/', 'create user', async (req, res) => {
+    const inUser = castObject(req.body);
+    const outUser = await createUser(inUser);
+    res.send(outUser);
+  });
 
   return router;
 }

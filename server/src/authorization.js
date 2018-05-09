@@ -1,7 +1,7 @@
 // @flow
 
 import ConnectRoles from 'connect-roles';
-import type {ActionToRolesMapType} from './types';
+import type {ActionToRolesMapType, UserType} from './types';
 
 export function setupAuthorization(
   app: express$Application,
@@ -18,21 +18,26 @@ export function setupAuthorization(
 
   app.use(user.middleware());
 
+  const unrestrictedActions = [
+    'create user',
+    'delete user',
+    'get all people',
+    'validate user'
+  ];
   // Regardless of whether the user has authenticated,
-  // they can "get all people".
+  // they can perform unrestrictedActions.
   // Returning false stops any more rules from being considered,
   // so don't do that.
   user.use((req, action) => {
-    if (action === 'get all people') return true;
+    if (unrestrictedActions.includes(action)) return true;
   });
 
-  Object.entries(actions).forEach(([action: string, roles: string[]]): void => {
+  Object.entries(actions).forEach(([action, roles]) => {
     user.use(action, req => {
-      console.log('authorization.js x: action =', action);
-      console.log('authorization.js x: roles =', roles);
-      const userRoles = req.user.roles;
-      console.log('authorization.js x: userRoles =', userRoles);
-      if (userRoles.some(userRole => roles.includes(userRole))) return true;
+      const inUser: UserType = req.user;
+      const userRoles = inUser.roles || [];
+      const casted = ((roles: any): string[]);
+      if (userRoles.some(userRole => casted.includes(userRole))) return true;
     });
   });
 
