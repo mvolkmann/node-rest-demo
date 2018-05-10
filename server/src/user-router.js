@@ -2,7 +2,7 @@
 
 import express from 'express';
 import {wrap} from './util/error-util';
-import {castNumber, castObject} from './util/flow-util';
+import {castObject} from './util/flow-util';
 import {createUser, deleteUser, validatePassword} from './user-service';
 
 type CanFnType = (action: string) => boolean;
