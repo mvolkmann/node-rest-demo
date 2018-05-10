@@ -3,12 +3,19 @@
 import expressSession from 'express-session';
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
-import type {UsersType} from './types';
+import PgConnection from 'postgresql-easy';
+import {compare} from './util/encrypt';
 
-export function setupAuthentication(
-  app: express$Application,
-  users: UsersType
-): void {
+const config = {database: 'demo'};
+const pg = new PgConnection(config);
+
+async function getUser(username) {
+  const sql = 'select * from app_user where username = $1';
+  const [user] = await pg.query(sql, username);
+  return user;
+}
+
+export function setupAuthentication(app: express$Application): void {
   app.use(
     expressSession({
       secret: 'my session secret', //TODO: Need to hide this?
@@ -24,16 +31,23 @@ export function setupAuthentication(
 
   //TODO: Change this to use Postgres to authenticate users.
   //TODO: Use some hashing algorithm to store and check passwords.
-  const strategy = new LocalStrategy((username, password, done) => {
-    const user = users[username];
-    const valid = user && user.password === password;
+  const strategy = new LocalStrategy(async (username, password, done) => {
+    const user = await getUser(username);
+    const valid = user && (await compare(password, user.passwordhash));
     return valid ? done(null, user) : done(null, false);
   });
 
   passport.use(strategy);
+
   passport.serializeUser((user, done) => done(null, user.username));
-  passport.deserializeUser((username, done) => done(null, users[username]));
+
+  passport.deserializeUser(async (username, done) => {
+    const user = await getUser(username);
+    done(null, user);
+  });
+
   app.use(passport.initialize());
+
   app.use(passport.session());
 
   return passport.authenticate('local', {

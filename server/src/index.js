@@ -11,9 +11,6 @@ import {getRouter as getPeopleRouter} from './people-router';
 import {getRouter as getUserRouter} from './user-router';
 import actions from '../actions.json';
 
-//TODO: Get these from the database.
-import users from '../users.json';
-
 const app = express();
 
 // This causes logging of all HTTP requests to be written to stdout.
@@ -30,7 +27,7 @@ app.use(morgan('dev'));
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
 
-const auth = setupAuthentication(app, users);
+const auth = setupAuthentication(app);
 const can = setupAuthorization(app, actions);
 
 const peopleRouter = getPeopleRouter(can);
