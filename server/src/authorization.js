@@ -22,6 +22,8 @@ export function setupAuthorization(
     'create user',
     'delete user',
     'get all people',
+    'login',
+    'logout',
     'validate user'
   ];
   // Regardless of whether the user has authenticated,
@@ -35,7 +37,7 @@ export function setupAuthorization(
   Object.entries(actions).forEach(([action, roles]) => {
     user.use(action, req => {
       const inUser: UserType = req.user;
-      const userRoles = inUser.roles || [];
+      const userRoles = (inUser && inUser.roles) || [];
       const casted = ((roles: any): string[]);
       if (userRoles.some(userRole => casted.includes(userRole))) return true;
     });

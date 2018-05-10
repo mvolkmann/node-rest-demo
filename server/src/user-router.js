@@ -19,9 +19,12 @@ export function getRouter(can: CanFnType) {
   route('get', '/', 'validate password', req =>
     validatePassword(req.params.username, req.params.password)
   );
-  route('delete', '/:id', 'delete user', req =>
-    deleteUser(castNumber(req.params.id))
-  );
+
+  route('delete', '/:id', 'delete user', (req, res) => {
+    deleteUser(castNumber(req.params.id));
+    res.send('success');
+  });
+
   route('post', '/', 'create user', async (req, res) => {
     const inUser = castObject(req.body);
     const outUser = await createUser(inUser);

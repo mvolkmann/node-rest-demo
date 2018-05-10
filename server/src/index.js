@@ -54,6 +54,13 @@ app.post('/login', auth, (req: express$Request, res: express$Response) => {
   res.send('success');
 });
 
+app.get('/logout', (req: express$Request, res: express$Response) => {
+  // $FlowFixMe - Passport adds the logout method to the request object.
+  req.logout();
+  //res.redirect('/');
+  res.send('success');
+});
+
 // This route is not protected.
 app.get('/pid', (req: express$Request, res: express$Response) =>
   res.send(String(process.pid))
