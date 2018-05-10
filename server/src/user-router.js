@@ -20,8 +20,8 @@ export function getRouter(can: CanFnType) {
     validatePassword(req.params.username, req.params.password)
   );
 
-  route('delete', '/:id', 'delete user', (req, res) => {
-    deleteUser(castNumber(req.params.id));
+  route('delete', '/:username', 'delete user', (req, res) => {
+    deleteUser(req.params.username);
     res.send('success');
   });
 
