@@ -9,10 +9,6 @@ import {getUser} from './user-service';
 import {compare} from './util/encrypt';
 
 /**
- * This is used by Passport below in the authentication "strategy"
- * and for "deserializing" a user.
- */
-/**
  * This configures user authentication using Passport.
  */
 export function setupAuthentication(app: express$Application): void {

@@ -1,7 +1,8 @@
 // @flow
 
 import PgConnection from 'postgresql-easy';
-import {type PersonType, validatePerson} from './people';
+import {validatePerson} from './people';
+import type {PersonType} from './types';
 
 const config = {database: 'demo'};
 const pg = new PgConnection(config);
@@ -38,6 +39,12 @@ export const getAllPeople = (): Promise<PersonType[]> => pg.getAll('people');
 export const getPersonById = (id: string): Promise<PersonType> =>
   pg.getById('people', id);
 
+/**
+ * This throws an error if the person with a given id
+ * is currently enabled and "want" is false or
+ * is currently disabled and "want" is false.
+ * It also throws an error if no person with the given id is found.
+ */
 async function validateEnabled(id: string, want: boolean) {
   const person = await pg.getById('people', id);
   if (!person) throw new Error('no person with id ' + id);

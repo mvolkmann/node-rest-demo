@@ -29,28 +29,30 @@ app.use(morgan('dev'));
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
 
-// Parse JSON request bodGies to JavaScript objects.
+// Parse JSON request bodies to JavaScript objects.
 app.use(bodyParser.json());
 
 // Parse text request bodies to JavaScript strings.
 app.use(bodyParser.text());
 
 setupAuthentication(app);
+
 const can = setupAuthorization(app, actions);
 
 const peopleRouter = getPeopleRouter(can);
-const userRouter = getUserRouter(can);
+app.use('/people', peopleRouter);
 
-// This route is not protected.
+const userRouter = getUserRouter(can);
+app.use('/user', userRouter);
+
+// This route gets the server process id.
+// It is useful to verify that local balancing is happening.
 app.get('/pid', (req: express$Request, res: express$Response) =>
   res.send(String(process.pid))
 );
 
-app.use('/people', peopleRouter);
-app.use('/user', userRouter);
-
-// This route is not protected.
-// To get uptime of server, browse localhost:3001.
+// This route gets the uptime of the server.
+// Browse localhost:3001.
 app.use(/^\//, healthCheck());
 
 const PORT = 3001;

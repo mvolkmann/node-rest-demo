@@ -33,10 +33,7 @@ export function getRouter(can: CanFnType) {
     router[method](path, can(action), wrap(handler));
   }
 
-  route('get', '/', 'get all people', () => {
-    console.log('people-router.js get all people: entered');
-    return getAllPeople();
-  });
+  route('get', '/', 'get all people', () => getAllPeople());
 
   route('delete', '/:id', 'delete person', req => deletePerson(req.params.id));
 
@@ -59,6 +56,7 @@ export function getRouter(can: CanFnType) {
   route('put', '/:id/disable', 'disable person', req =>
     disablePerson(req.params.id)
   );
+
   route('put', '/:id/enable', 'enable person', req =>
     enablePerson(req.params.id)
   );
