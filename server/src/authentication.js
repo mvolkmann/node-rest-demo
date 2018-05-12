@@ -1,20 +1,20 @@
 // @flow
 
+// This configures authentication using Passport and Postgres.
+
 import expressSession from 'express-session';
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
-import PgConnection from 'postgresql-easy';
+import {getUser} from './user-service';
 import {compare} from './util/encrypt';
 
-const config = {database: 'demo'};
-const pg = new PgConnection(config);
-
-async function getUser(username) {
-  const sql = 'select * from app_user where username = $1';
-  const [user] = await pg.query(sql, username);
-  return user;
-}
-
+/**
+ * This is used by Passport below in the authentication "strategy"
+ * and for "deserializing" a user.
+ */
+/**
+ * This configures user authentication using Passport.
+ */
 export function setupAuthentication(app: express$Application): void {
   app.use(
     expressSession({
@@ -25,13 +25,14 @@ export function setupAuthentication(app: express$Application): void {
   );
 
   const strategy = new LocalStrategy(async (username, password, done) => {
-    console.log('authentication.js strategy: username =', username);
     const user = await getUser(username);
     const valid = user && (await compare(password, user.passwordhash));
     return valid ? done(null, user) : done(null, false);
   });
   passport.use(strategy);
+
   passport.serializeUser((user, done) => done(null, user.username));
+
   passport.deserializeUser(async (username, done) => {
     const user = await getUser(username);
     done(null, user);
@@ -42,22 +43,21 @@ export function setupAuthentication(app: express$Application): void {
   app.use(passport.session());
 
   const auth = passport.authenticate('local', {
-    //TODO: Probably need to make these configurable.
-    //successRedirect: '/home', // to go to page after successful login
-    //failureRedirect: '/login' // to return to the login page
-    //failureRedirect: '/login-fail' // to customize error message;
+    //TODO: Probably should make these configurable.
+    //successRedirect: '/home', // go to some page after successful login
+    //failureRedirect: '/login' // return to login page
+    failureRedirect: '/login-fail' // customizes the error message;
     // otherwise says "Unauthorized"
   });
 
-  // $FlowFixMe
   app.post('/login', auth, (req: express$Request, res: express$Response) => {
     // This is called when authentication is successful.
     // `req.user` contains the authenticated user.
 
     //TODO: How does this differ from successRedirect above?
-    //res.redirect('/pid');
+    //res.redirect('/home');
 
-    //TODO: Probably don't want redirect instead of this.
+    //TODO: When called from a web UI, want redirect instead of this.
     res.send('success');
   });
 
@@ -69,7 +69,9 @@ export function setupAuthentication(app: express$Application): void {
   app.post('/logout', (req: express$Request, res: express$Response) => {
     // $FlowFixMe - Passport adds the logout method to the request object.
     req.logout();
-    //res.redirect('/');
+
+    //TODO: When called from a web UI, redirect to login page.
+    //res.redirect('/login');
     res.send('success');
   });
 }

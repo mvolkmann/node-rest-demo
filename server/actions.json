@@ -1,9 +1,15 @@
 {
+  "create user": [],
   "create new person": ["admin"],
   "delete person": ["admin"],
+  "delete user": [],
   "disable person": ["admin"],
   "enable person": ["admin"],
   "get all disabled": ["normal", "admin"],
   "get all enabled": ["normal", "admin"],
-  "get specific person": ["normal", "admin"]
+  "get all people": [],
+  "get specific person": ["normal", "admin"],
+  "login": [],
+  "logout": [],
+  "validate user": []
 }

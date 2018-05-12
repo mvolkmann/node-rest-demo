@@ -14,11 +14,20 @@ import {
 import {wrap} from './util/error-util';
 import {castObject} from './util/flow-util';
 
-type CanFnType = (action: string) => boolean;
+import type {CanFnType} from './authorization';
 
+/**
+ * This returns an Express Router that defines routes
+ * for the "people" services.
+ */
 export function getRouter(can: CanFnType) {
   const router = express.Router();
 
+  /**
+   * This greatly simplifies route configuration.  It ensures that
+   * all routes check for authorization using the "can" function
+   * and handles errors consistently.
+   */
   function route(method: string, path: string, action: string, handler) {
     // $FlowFixMe - doesn't like calling a computed method
     router[method](path, can(action), wrap(handler));

@@ -1,7 +1,16 @@
 // @flow
 
+// This configures authorization using "connect-roles".
+
 import ConnectRoles from 'connect-roles';
 import type {ActionToRolesMapType, UserType} from './types';
+
+/**
+ * This is the type of a function that determines
+ * whether the logged in user is authorized
+ * to perform a given action.
+ */
+export type CanFnType = (action: string) => boolean;
 
 export function setupAuthorization(
   app: express$Application,
@@ -18,32 +27,24 @@ export function setupAuthorization(
 
   app.use(user.middleware());
 
-  const unrestrictedActions = [
-    'create user',
-    'delete user',
-    'get all people',
-    'login',
-    'logout',
-    'validate user'
-  ];
-  // Regardless of whether the user has authenticated,
-  // they can perform unrestrictedActions.
-  // Returning false stops any more rules from being considered,
-  // so don't do that.
-  user.use((req, action) => {
-    if (unrestrictedActions.includes(action)) return true;
-  });
-
   Object.entries(actions).forEach(([action, roles]) => {
     user.use(action, req => {
+      // Returning false stops any more rules from being considered,
+      // so don't do that.
+
+      // If the action has no specified roles,
+      // allow any user to perform it.
+      const rolesArr = ((roles: any): string[]);
+      if (rolesArr.length === 0) return true;
+
+      // Allow the action if the user has one of the required roles.
       const inUser: UserType = req.user;
       const userRoles = (inUser && inUser.roles) || [];
-      const casted = ((roles: any): string[]);
-      if (userRoles.some(userRole => casted.includes(userRole))) return true;
+      if (userRoles.some(userRole => rolesArr.includes(userRole))) return true;
     });
   });
 
-  // Caller should use this function in route configurations
+  // Callers should use the returned function in route configurations
   // to verify authorization to perform specific actions.
   return user.can.bind(user);
 }

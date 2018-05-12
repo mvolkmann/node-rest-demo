@@ -1,7 +1,7 @@
 // @flow
 
 import PgConnection from 'postgresql-easy';
-import {compare, encrypt} from './util/encrypt';
+import {encrypt} from './util/encrypt';
 import type {UserType} from './types';
 
 const config = {database: 'demo'};
@@ -25,11 +25,8 @@ export async function deleteUser(username: string): Promise<void> {
   await pg.query(sql, username);
 }
 
-export async function validatePassword(
-  username: string,
-  password: string
-): Promise<boolean> {
-  const sql = 'select passwordHash from user where username = $1';
-  const passwordHash = await pg.query(sql, username);
-  return compare(password, passwordHash);
+export async function getUser(username: string): Promise<UserType> {
+  const sql = 'select * from app_user where username = $1';
+  const [user] = await pg.query(sql, username);
+  return user;
 }

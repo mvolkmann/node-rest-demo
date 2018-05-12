@@ -1,24 +1,28 @@
 // @flow
 
 import express from 'express';
+import {createUser, deleteUser} from './user-service';
 import {wrap} from './util/error-util';
 import {castObject} from './util/flow-util';
-import {createUser, deleteUser, validatePassword} from './user-service';
 
-type CanFnType = (action: string) => boolean;
+import type {CanFnType} from './authorization';
 
+/**
+ * This returns an Express Router that defines routes
+ * for the "people" services.
+ */
 export function getRouter(can: CanFnType) {
-  // This maps URLs to handler functions.
   const router = express.Router();
 
+  /**
+   * This greatly simplifies route configuration.  It ensures that
+   * all routes check for authorization using the "can" function
+   * and handles errors consistently.
+   */
   function route(method: string, path: string, action: string, handler) {
     // $FlowFixMe - doesn't like calling a computed method
     router[method](path, can(action), wrap(handler));
   }
-
-  route('get', '/', 'validate password', req =>
-    validatePassword(req.params.username, req.params.password)
-  );
 
   route('delete', '/:username', 'delete user', (req, res) => {
     deleteUser(req.params.username);
