@@ -27,17 +27,17 @@ app.use(morgan('dev'));
 // This is only needed to serve static files.
 //app.use('/', express.static('public'));
 
-// Parse JSON request bodGies to JavaScript objects.
-app.use(bodyParser.json());
-
-// Parse text request bodies to JavaScript strings.
-app.use(bodyParser.text());
-
 setupAuthentication(app);
 const can = setupAuthorization(app, actions);
 
 const peopleRouter = getPeopleRouter(can);
 const userRouter = getUserRouter(can);
+
+// Parse JSON request bodGies to JavaScript objects.
+app.use(bodyParser.json());
+
+// Parse text request bodies to JavaScript strings.
+app.use(bodyParser.text());
 
 // This route is not protected.
 app.get('/pid', (req: express$Request, res: express$Response) =>
