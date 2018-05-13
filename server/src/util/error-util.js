@@ -6,6 +6,7 @@ type HandlerType = (
   next: express$NextFunction
 ) => Promise<mixed>;
 
+export class NotFoundError extends Error {}
 export class RequestError extends Error {}
 
 // Controls the amount of console output.
@@ -38,7 +39,13 @@ export function wrap(handler: HandlerType): HandlerType {
       if (typeof result === 'number') result = String(result);
       res.send(result);
     } catch (e) {
-      if (e instanceof RequestError) res.status(400);
+      const status =
+        e instanceof RequestError
+          ? 400
+          : e instanceof NotFoundError
+            ? 404
+            : 500;
+      res.status(status);
       errorHandler(next, e);
     }
   };

@@ -2,7 +2,7 @@
 
 import PgConnection from 'postgresql-easy';
 import {validatePerson} from './people';
-import {RequestError} from './util/error-util';
+import {NotFoundError, RequestError} from './util/error-util';
 import type {PersonType} from './types';
 
 const config = {database: 'demo'};
@@ -39,8 +39,7 @@ export const getAllPeople = (): Promise<PersonType[]> => pg.getAll('people');
 
 export const getPersonById = async (id: string): Promise<PersonType> => {
   const person = await pg.getById('people', id);
-  console.log('people-service.js getPersonById: person =', person);
-  if (!person) throw new RequestError(`no person with id ${id} found`);
+  if (!person) throw new NotFoundError(`no person with id ${id} found`);
   return person;
 };
 
@@ -52,9 +51,9 @@ export const getPersonById = async (id: string): Promise<PersonType> => {
  */
 async function validateEnabled(id: string, want: boolean) {
   const person = await pg.getById('people', id);
-  if (!person) throw new Error('no person with id ' + id);
+  if (!person) throw new NotFoundError('no person with id ' + id);
   if (person.enabled !== want) {
     const kind = want ? 'disable' : 'enable';
-    throw new Error(`cannot ${kind} a person already ${kind}d`);
+    throw new RequestError(`cannot ${kind} a person already ${kind}d`);
   }
 }
