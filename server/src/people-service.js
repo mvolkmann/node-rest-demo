@@ -2,6 +2,7 @@
 
 import PgConnection from 'postgresql-easy';
 import {validatePerson} from './people';
+import {RequestError} from './util/error-util';
 import type {PersonType} from './types';
 
 const config = {database: 'demo'};
@@ -36,8 +37,12 @@ export const getAllEnabled = (): Promise<PersonType[]> =>
 
 export const getAllPeople = (): Promise<PersonType[]> => pg.getAll('people');
 
-export const getPersonById = (id: string): Promise<PersonType> =>
-  pg.getById('people', id);
+export const getPersonById = async (id: string): Promise<PersonType> => {
+  const person = await pg.getById('people', id);
+  console.log('people-service.js getPersonById: person =', person);
+  if (!person) throw new RequestError(`no person with id ${id} found`);
+  return person;
+};
 
 /**
  * This throws an error if the person with a given id
