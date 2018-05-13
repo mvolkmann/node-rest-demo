@@ -12,11 +12,15 @@ import {compare} from './util/encrypt';
  * This configures user authentication using Passport.
  */
 export function setupAuthentication(app: express$Application): void {
+  // For details on express-session, see https://github.com/expressjs/session.
   app.use(
     expressSession({
-      secret: 'my session secret', //TODO: Need to hide this?
-      resave: true, //TODO: What does this do?
-      saveUninitialized: true //TODO: What does this do?
+      // If a request doesn't modify the session, don't save it to the store.
+      resave: false,
+      // Don't save new, unmodified sessions to the store.
+      saveUninitialized: false,
+      // This is used to sign the session ID cookie.
+      secret: 'my session secret'
     })
   );
 
@@ -39,21 +43,20 @@ export function setupAuthentication(app: express$Application): void {
   app.use(passport.session());
 
   const auth = passport.authenticate('local', {
-    //TODO: Probably should make these configurable.
-    //successRedirect: '/home', // go to some page after successful login
-    //failureRedirect: '/login' // return to login page
-    failureRedirect: '/login-fail' // customizes the error message;
-    // otherwise says "Unauthorized"
+    // Go to the "home" page after successful authentications.
+    //successRedirect: '/home',
+
+    // Return to the "login" page after failed authentications.
+    //failureRedirect: '/login'
+
+    // Customize the error message for failed authentications
+    // so the default of "Unauthorized" is not used.
+    failureRedirect: '/login-fail'
   });
 
   app.post('/login', auth, (req: express$Request, res: express$Response) => {
     // This is called when authentication is successful.
     // `req.user` contains the authenticated user.
-
-    //TODO: How does this differ from successRedirect above?
-    //res.redirect('/home');
-
-    //TODO: When called from a web UI, want redirect instead of this.
     res.send('success');
   });
 
@@ -66,7 +69,8 @@ export function setupAuthentication(app: express$Application): void {
     // $FlowFixMe - Passport adds the logout method to the request object.
     req.logout();
 
-    //TODO: When called from a web UI, redirect to login page.
+    // When called from a web UI,
+    // redirect to login page instead of sending a response.
     //res.redirect('/login');
     res.send('success');
   });
