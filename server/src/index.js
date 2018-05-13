@@ -11,7 +11,7 @@ import {getRouter as getPeopleRouter} from './people-router';
 import {getRouter as getUserRouter} from './user-router';
 
 // This defines a mapping from actions to required roles.
-import actions from '../actions.json';
+import actions from './actions.json';
 
 const app = express();
 
