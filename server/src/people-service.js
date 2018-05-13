@@ -2,6 +2,7 @@
 
 import PgConnection from 'postgresql-easy';
 import {validatePerson} from './people';
+import {sendEmail} from './util/email';
 import {NotFoundError, RequestError} from './util/error-util';
 import type {PersonType} from './types';
 
@@ -42,6 +43,27 @@ export const getPersonById = async (id: string): Promise<PersonType> => {
   if (!person) throw new NotFoundError(`no person with id ${id} found`);
   return person;
 };
+
+function reportSection(title: string, people: PersonType[]) {
+  let section = `${title} (${people.length})`;
+  for (const person of people) {
+    section += `\n${person.lastname}, ${person.firstname}`;
+  }
+  return section;
+}
+
+export async function report() {
+  const enabled = await getAllEnabled();
+  const disabled = await getAllDisabled();
+  const report =
+    reportSection('Enabled People', enabled) +
+    '\n' +
+    reportSection('Disabled People', disabled);
+
+  const to = ['mark@objectcomputing.com'];
+  const subject = 'All People Report';
+  sendEmail({to, subject, text: report});
+}
 
 /**
  * This throws an error if the person with a given id

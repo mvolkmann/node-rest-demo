@@ -1,5 +1,6 @@
 node_modules
 server/build
 server-copy
+server/src/secrets.json
 .DS_Store
 .*.swp

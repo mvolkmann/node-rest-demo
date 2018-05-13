@@ -4,6 +4,7 @@
   "delete person": ["admin"],
   "delete user": [],
   "disable person": ["admin"],
+  "email all people": [],
   "enable person": ["admin"],
   "get all disabled": ["normal", "admin"],
   "get all enabled": ["normal", "admin"],

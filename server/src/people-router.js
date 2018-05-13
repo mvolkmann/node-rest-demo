@@ -9,7 +9,8 @@ import {
   getAllDisabled,
   getAllEnabled,
   getAllPeople,
-  getPersonById
+  getPersonById,
+  report
 } from './people-service';
 import {wrap} from './util/error-util';
 import {castObject} from './util/flow-util';
@@ -34,6 +35,8 @@ export function getRouter(can: CanFnType) {
   }
 
   route('get', '/', 'get all people', () => getAllPeople());
+
+  route('get', '/report', 'email all people', report);
 
   route('delete', '/:id', 'delete person', req => deletePerson(req.params.id));
 

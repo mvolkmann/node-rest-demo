@@ -5,6 +5,7 @@
 import expressSession from 'express-session';
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
+import {sessionSecret} from './secrets.json';
 import {getUser} from './user-service';
 import {compare} from './util/encrypt';
 
@@ -20,7 +21,7 @@ export function setupAuthentication(app: express$Application): void {
       // Don't save new, unmodified sessions to the store.
       saveUninitialized: false,
       // This is used to sign the session ID cookie.
-      secret: 'my session secret'
+      secret: sessionSecret
     })
   );
 
