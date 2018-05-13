@@ -6,6 +6,8 @@ type HandlerType = (
   next: express$NextFunction
 ) => Promise<mixed>;
 
+export class RequestError extends Error {}
+
 // Controls the amount of console output.
 const inTest = process.env.NODE_ENV === 'test';
 
@@ -22,10 +24,6 @@ export function logError(msg: string): void {
   if (!inTest) console.error(msg);
 }
 
-export function throwIf(condition: boolean, message: string) {
-  if (condition) throw new Error(message);
-}
-
 // This provides common error handling for REST services.
 export function wrap(handler: HandlerType): HandlerType {
   return async (
@@ -40,6 +38,7 @@ export function wrap(handler: HandlerType): HandlerType {
       if (typeof result === 'number') result = String(result);
       res.send(result);
     } catch (e) {
+      if (e instanceof RequestError) res.status(400);
       errorHandler(next, e);
     }
   };

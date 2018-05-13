@@ -1,9 +1,13 @@
 // @flow
 
-import {throwIf} from './util/error-util';
+import {RequestError} from './util/error-util';
 import type {PersonType} from './types';
 
 const requiredProperties = ['age', 'firstname', 'lastname'];
+
+function throwIf(condition: boolean, message: string) {
+  if (condition) throw new RequestError(message);
+}
 
 function startsUpper(text: string): boolean {
   return /^[A-Z]/.test(text);
