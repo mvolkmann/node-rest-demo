@@ -7,17 +7,19 @@ This demonstrates implementing REST services using Node.js.
 * bcrypt - for creating an encrypted hash from a password
     and comparing a password to a hash
 * body-parser - for parsing HTTP request bodies
-    when Content-Type is 'application/json'
-* connect-roles - for authorization
+  (ex. parsing to JavaScript objects when
+  the `Content-Type` header is `application/json`)
+* connect-roles - for user authorization to perform specific actions
 * cors - for cross-origin resource sharing with web UI servers
 * express - for implementing server for REST services
 * express-healthcheck - for reporting Express server uptime
-* express-session - for maintaining session data (just user login)
+* express-session - for maintaining session data (such as user logins)
 * morgan - for Express server request logging
 * nodemailer - for sending email
-* passport - for authenication
+* passport - for user authenication
 * passport-local - for custom authentication strategy
-* pm2 - for running multiple server instances and providing load balancing
+* pm2 - for running multiple server instances on the same machine
+  and providing load balancing
 * postgresql-easy - for querying and updating PostgreSQL databases
 
 ## Developer Dependencies
@@ -34,27 +36,37 @@ This demonstrates implementing REST services using Node.js.
 ## Database
 
 This uses the PostgreSQL database.
-The DDL for creating tables and providing initial data is in server/ddl.sql.
+The DDL for creating tables and providing initial data is in `server/ddl.sql`.
 There are two tables.
-The "people" table stores data about people.
-The "app_user" table stores data about users of this application.
-It is not named "user" because that is a reserved keyword in PostgreSQL.
+The `people` table stores data about people.
+The `app_user` table stores data about users of this application.
+It is not named `user` because that is a reserved keyword in PostgreSQL.
 
 To perform database operations, begin by cd'ing to the `server` directory.
+
 To start the database server, enter `npm dbstart`.
+
 To stop the database server, enter `npm dbstop`.
-To create/recreate the tables with their initial data,
+
+To create or recreate the tables with their initial data,
 enter `npm dbsetup`.
+The initial data consists of six people, but not users.
+Users can be created by calling a REST service.
+
 To inspect the database using PostgreSQL interactive mode,
 enter `npm run dbi`.
 
 ## Server
 
 This uses Express to implement a server for REST services.
+
 To perform server operations, begin by cd'ing to the `server` directory.
+
 To start the server, enter `npm run start`.
-To start the server using load balancing across multiple instances,
-enter `npm run lb`.
+
+To start the server using load balancing across multiple instances
+on the same machine, enter `npm run lb`.
+
 To start the server in a way that causes it to
 restart automatically when code changes are detected,
 enter `npm run start-dev`.
@@ -62,14 +74,18 @@ enter `npm run start-dev`.
 ## Developer Tasks
 
 To perform developer tasks, begin by cd'ing to the `server` directory.
+
 To lint all the JavaScript code, enter `npm run lint`.
+
 To perform type checking on all the JavaScript code, enter `npm run flow`.
+
 To format all the JavaScript code, enter `npm run format`.
+
 To run all the tests, enter `npm test`.
 
 ## Code Summary
 
-### index.js
+### `index.js`
 
 This does many things including:
 
@@ -83,57 +99,59 @@ This does many things including:
 * configures all REST service routes
   (delegating to `people-router.js` and `user-router.js`)
 * configures a REST service to get the server process id
-  (useful for verifying the use of load balancing)
+  which is useful for verifying the use of load balancing
 * configures a "healthcheck" REST service
   that outputs the server "uptime"
 * starts listening for requests on port 3001
 
-## secrets.json
+### `secrets.json`
 
-This defines values for constants with sensitive values.
+This defines constants with sensitive values.
 `emailPassword` is used to send emails.
 `sessionSecret` is used sign the session ID cookie.
 This file is not checked into version control.
 
-## auth.json
+### `auth.json`
 
 This maps actions to the roles required to perform them.
 Actions with no associated roles can be performed by any user.
 
-## types.json
+### `types.json`
 
 This defines several Flow types needed for type checking.
 
-## people-router.js
+### `people-router.js`
 
 This defines the Express routes for REST services related to people.
 It delegates all database interactions to `people-service.js`.
 
-## people-service.js
+### `people-service.js`
 
 This defines functions for performing operations on people
 that involve database interactions.
 
-## people.js
+### `people.js`
 
 This defines a function for validating objects that describe a person.
 
-## user-router.js
+### `user-router.js`
 
 This defines the Express routes for REST services related to users.
 It delegates all database interactions to `user-service.js`.
 
-## user-service.js
+### `user-service.js`
 
 This defines functions for performing operations on users
 that involve database interactions.
 
-## authentication.js
+### `authentication.js`
 
-This configures the use of the npm package "Passport"
+This configures the use of the npm package `passport`
 to perform user authentication.
+It uses the `app_user` database table.
 
-## authorization.js
+### `authorization.js`
 
-This configures the use of the npm package "connect-roles"
+This configures the use of the npm package `connect-roles`
 to perform user authorization required by some actions.
+It uses the action to roles mappings defined in `actions.json`.
