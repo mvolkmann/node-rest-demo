@@ -155,3 +155,85 @@ It uses the `app_user` database table.
 This configures the use of the npm package `connect-roles`
 to perform user authorization required by some actions.
 It uses the action to roles mappings defined in `actions.json`.
+
+## Example REST Calls
+
+### To create a user
+
+`POST http://localhost:3001/user`
+with header `Content-Type: application/json` and body
+
+```json
+{
+  "username": "some-user",
+  "password": "some-password",
+  "roles": ["role1", "role2"]
+}
+```
+
+The supported roles are "normal" and "admin".
+
+### To delete a user
+
+`DELETE http://localhost:3001/user/{username}`
+
+### To login
+
+`POST http://localhost:3001/login`
+with header `Content-Type: application/json` and body
+
+```json
+{
+  "username": "some-user",
+  "password": "some-password"
+}
+```
+
+### To logout
+
+`POST http://localhost:3001/logout`
+
+### To get the server process id
+
+`GET http://localhost:3001/pid`
+
+### To get the server uptime
+
+`GET http://localhost:3001`
+
+### To get all people
+
+`GET http://localhost:3001/people`
+
+### To get a specific person
+
+`GET http://localhost:3001/people/{id}`
+
+### To create a new person
+
+`POST http://localhost:3001/people`
+with header `Content-Type: application/json` and body
+
+```json
+{
+  "age": some-age,
+  "firstname": "some-first-name",
+  "lastname": "some-last-name"
+}
+```
+
+### To get all enabled people
+
+`GET http://localhost:3001/people/enabled`
+
+### To get all disabled people
+
+`GET http://localhost:3001/people/disabled`
+
+### To enable a specific person
+
+`PUT http://localhost:3001/people/{id}/enable`
+
+### To disable a specific person
+
+`PUT http://localhost:3001/people/{id}/disable`
