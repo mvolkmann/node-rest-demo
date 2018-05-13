@@ -14,20 +14,17 @@
     "lb": "pm2 start build/index.js -i -1",
     "lint": "eslint --quiet src --ext .js",
     "start": "node build/index.js",
-    "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
+    "start-dev":
+      "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
     "test": "npm-run-all dbsetup build jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mvolkmann/node-rest-demo.git"
   },
-  "keywords": [
-    "Node",
-    "Express",
-    "REST",
-    "PostgreSQL"
-  ],
-  "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (https://mvolkmann.github.io/)",
+  "keywords": ["Node", "Express", "REST", "PostgreSQL"],
+  "author":
+    "R. Mark Volkmann <r.mark.volkmann@gmail.com> (https://mvolkmann.github.io/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mvolkmann/node-rest-demo/issues"
@@ -45,7 +42,8 @@
     "nodemailer": "^4.6.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "postgresql-easy": "^1.2.4"
+    "postgresql-easy": "^1.2.4",
+    "pm2": "^2.10.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -62,7 +60,6 @@
     "got": "^8.3.0",
     "jest": "^22.4.3",
     "npm-run-all": "^4.1.2",
-    "pm2": "^2.10.3",
     "prettier": "^1.12.1"
   }
 }
