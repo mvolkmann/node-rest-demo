@@ -14,17 +14,20 @@
     "lb": "pm2 start build/index.js -i -1",
     "lint": "eslint --quiet src --ext .js",
     "start": "node build/index.js",
-    "start-dev":
-      "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
+    "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
     "test": "npm-run-all dbsetup build jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mvolkmann/node-rest-demo.git"
   },
-  "keywords": ["Node", "Express", "REST", "PostgreSQL"],
-  "author":
-    "R. Mark Volkmann <r.mark.volkmann@gmail.com> (https://mvolkmann.github.io/)",
+  "keywords": [
+    "Node",
+    "Express",
+    "REST",
+    "PostgreSQL"
+  ],
+  "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (https://mvolkmann.github.io/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mvolkmann/node-rest-demo/issues"

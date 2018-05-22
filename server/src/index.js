@@ -15,6 +15,8 @@ import actions from './actions.json';
 
 const app = express();
 
+app.enable('trust proxy');
+
 // This causes logging of all HTTP requests to be written to stdout.
 // The provided options are combined, common, dev, short, and tiny.
 // For more details, browse https://github.com/expressjs/morgan.
@@ -55,5 +57,5 @@ app.get('/pid', (req: express$Request, res: express$Response) =>
 // Browse localhost:3001.
 app.use(/^\//, healthCheck());
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001; // 8080
 app.listen(PORT, () => console.info('listening on', PORT));
