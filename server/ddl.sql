@@ -1,3 +1,4 @@
+\c demo
 -- "user" is a reserved keyword in PostgreSQL.
 drop table if exists app_user;
 create table app_user (
