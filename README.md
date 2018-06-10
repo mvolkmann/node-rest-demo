@@ -4,34 +4,33 @@ This demonstrates implementing REST services using Node.js.
 
 ## Runtime Dependencies
 
-* bcrypt - for creating an encrypted hash from a password
-    and comparing a password to a hash
-* body-parser - for parsing HTTP request bodies
+- bcrypt - for creating an encrypted hash from a password
+  and comparing a password to a hash
+- body-parser - for parsing HTTP request bodies
   (ex. parsing to JavaScript objects when
   the `Content-Type` header is `application/json`)
-* connect-roles - for user authorization to perform specific actions
-* cors - for cross-origin resource sharing with web UI servers
-* express - for implementing server for REST services
-* express-healthcheck - for reporting Express server uptime
-* express-session - for maintaining session data (such as user logins)
-* morgan - for Express server request logging
-* nodemailer - for sending email
-* passport - for user authenication
-* passport-local - for custom authentication strategy
-* pm2 - for running multiple server instances on the same machine
+- connect-roles - for user authorization to perform specific actions
+- cors - for cross-origin resource sharing with web UI servers
+- express - for implementing server for REST services
+- express-healthcheck - for reporting Express server uptime
+- express-session - for maintaining session data (such as user logins)
+- jsonwebtoken - for creating and validating JWT tokens
+- morgan - for Express server request logging
+- nodemailer - for sending email
+- pm2 - for running multiple server instances on the same machine
   and providing load balancing
-* postgresql-easy - for querying and updating PostgreSQL databases
+- postgresql-easy - for querying and updating PostgreSQL databases
 
 ## Developer Dependencies
 
-* babel-* - for transpiling newer JavaScript to supported JavaScript
-* eslint - for linting JavaScript code
-* eslint-plugin-* - for additional ESLint rules
-* flow-bin - for JavaScript type checking
-* got - for making REST calls from tests
-* jest - for implementing unit tests
-* npm-run-all - for running multiple npm scripts from a single npm script
-* prettier - for formatting JavaScript code
+- babel-\* - for transpiling newer JavaScript to supported JavaScript
+- eslint - for linting JavaScript code
+- eslint-plugin-\* - for additional ESLint rules
+- flow-bin - for JavaScript type checking
+- got - for making REST calls from tests
+- jest - for implementing unit tests
+- npm-run-all - for running multiple npm scripts from a single npm script
+- prettier - for formatting JavaScript code
 
 ## Database
 
@@ -83,26 +82,35 @@ To format all the JavaScript code, enter `npm run format`.
 
 To run all the tests, enter `npm test`.
 
+## Use of JSON Web Token
+
+- generated RSA private and public keys
+  - private: `openssl genrsa -out jwt-rsa.key
+  - public: `openssl rsa -in jwt-rsa.key -pubout > jwt-rsa.key.pub`
+- code to create the JWT token is in `authentication.js`
+  in the route for a POST to `/login`
+- also see `server/jwt-demo.js`
+
 ## Code Summary
 
 ### `index.js`
 
 This does many things including:
 
-* creates an Express server instance
-* configures logging
-* configures the use of CORS
-* requests setup of authentication
+- creates an Express server instance
+- configures logging
+- configures the use of CORS
+- requests setup of authentication
   (delegating to `authentication.js`)
-* requests setup of authorization
+- requests setup of authorization
   (delegating to `authorization.js`)
-* configures all REST service routes
+- configures all REST service routes
   (delegating to `people-router.js` and `user-router.js`)
-* configures a REST service to get the server process id
+- configures a REST service to get the server process id
   which is useful for verifying the use of load balancing
-* configures a "healthcheck" REST service
+- configures a "healthcheck" REST service
   that outputs the server "uptime"
-* starts listening for requests on port 3001
+- starts listening for requests on port 3001
 
 ### `secrets.json`
 
@@ -146,15 +154,15 @@ that involve database interactions.
 
 ### `authentication.js`
 
-This configures the use of the npm package `passport`
-to perform user authentication.
+This configures logins to perform user authentication and
+add a JWT token to the "token" cookie which is used for authorization.
 It uses the `app_user` database table.
 
 ### `authorization.js`
 
 This configures the use of the npm package `connect-roles`
 to perform user authorization required by some actions.
-It uses the action to roles mappings defined in `actions.json`.
+It uses the action-to-roles mappings defined in `actions.json`.
 
 ## Example REST Calls
 
@@ -216,7 +224,7 @@ with header `Content-Type: application/json` and body
 
 ```json
 {
-  "age": some-age,
+  "age": some - age,
   "firstname": "some-first-name",
   "lastname": "some-last-name"
 }

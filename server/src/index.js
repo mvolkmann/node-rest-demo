@@ -1,6 +1,7 @@
 // @flow
 
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import healthCheck from 'express-healthcheck';
 import morgan from 'morgan';
@@ -21,6 +22,9 @@ app.enable('trust proxy');
 // The provided options are combined, common, dev, short, and tiny.
 // For more details, browse https://github.com/expressjs/morgan.
 app.use(morgan('dev'));
+
+// This app stores a JWT token as a cookie named "token".
+app.use(cookieParser());
 
 // Enable cross-origin resource sharing
 // so the web server on another port can send

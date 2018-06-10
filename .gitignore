@@ -1,6 +1,8 @@
 node_modules
 server/build
 server-copy
+server/jwt-rsa.key
+server/jwt-rsa.key.pub
 server/secrets.json
 .DS_Store
 .*.swp
