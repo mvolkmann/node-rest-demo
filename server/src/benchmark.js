@@ -1,5 +1,5 @@
 // @flow
-import Benchmark from 'benchmark';
+//import Benchmark from 'benchmark';
 import got from 'got';
 
 const URL_PREFIX = 'http://localhost:3001';
