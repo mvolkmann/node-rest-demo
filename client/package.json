@@ -1,0 +1,23 @@
+{
+  "name": "node-rest-demo-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel -q src -d build",
+    "flow": "flow",
+    "format": "prettier-eslint --write 'src/**/*.js'",
+    "jest": "jest build",
+    "lint": "eslint --quiet src --ext .js",
+    "test": "npm-run-all build jest"
+  },
+  "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (https://mvolkmann.github.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "got": "^8.3.1",
+    "jest": "^23.1.0"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.3"
+  }
+}

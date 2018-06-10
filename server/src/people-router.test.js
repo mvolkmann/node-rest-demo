@@ -3,6 +3,7 @@
 // THESE TESTS ARE NOT CURRENTLY WORKING BECAUSE
 // THE LOGIN IN beforeAll is not working!
 
+import cookie from 'cookie';
 import got from 'got';
 
 const URL_PREFIX = 'http://localhost:3001';
@@ -10,34 +11,41 @@ const PEOPLE_PREFIX = URL_PREFIX + '/people';
 const USER_PREFIX = URL_PREFIX + '/user';
 
 describe('people-router', () => {
+  const gotOptions = {headers: {}, json: true};
+
   beforeAll(async () => {
     const body = {username: 'jbrown', password: 'p2', roles: ['admin']};
 
     // Create a user.
-    await got.post(USER_PREFIX, {body, json: true});
+    let res = await got.post(USER_PREFIX, {body, ...gotOptions});
+    expect(res.statusCode).toBe(200);
 
     // Login.
-    await got.post(URL_PREFIX + '/login', {body, json: true});
+    res = await got.post(URL_PREFIX + '/login', {body, ...gotOptions});
+    expect(res.statusCode).toBe(204);
+    const cookies = res.headers['set-cookie'];
+    gotOptions.headers.cookie = cookies.find(cookie =>
+      cookie.startsWith('token=')
+    );
   });
 
   test('get all', async () => {
     const url = PEOPLE_PREFIX;
-    const result = await got(url, {json: true});
+    const result = await got(url, gotOptions);
     const people = result.body;
     expect(people.length).toBe(6);
   });
 
-  /*
   test('get one', async () => {
     const url = PEOPLE_PREFIX + '/3';
-    const result = await got(url, {json: true});
+    const result = await got(url, gotOptions);
     const person = result.body;
     expect(person.firstname).toBe('Calvin');
   });
 
   test('get all enabled', async () => {
     const url = PEOPLE_PREFIX + '/enabled';
-    const result = await got(url, {json: true});
+    const result = await got(url, gotOptions);
     const people = result.body;
     expect(people.length).toBe(3);
     for (const person of people) {
@@ -47,7 +55,7 @@ describe('people-router', () => {
 
   test('get all disabled', async () => {
     const url = PEOPLE_PREFIX + '/disabled';
-    const result = await got(url, {json: true});
+    const result = await got(url, gotOptions);
     const people = result.body;
     expect(people.length).toBe(3);
     for (const person of people) {
@@ -63,7 +71,7 @@ describe('people-router', () => {
       firstname: 'Mark',
       lastname: 'Volkmann'
     };
-    const result = await got.post(url, {body: person, json: true});
+    const result = await got.post(url, {body: person, ...gotOptions});
     const newPerson = result.body;
     const id = parseInt(newPerson.id, 10);
     expect(id).toBeGreaterThan(0);
@@ -74,13 +82,17 @@ describe('people-router', () => {
   });
 
   test('enable and disable person', async () => {
-    await got.put(PEOPLE_PREFIX + '/2/enable');
-    let result = await got(PEOPLE_PREFIX + '/2', {json: true});
+    // Enable user 2.
+    await got.put(PEOPLE_PREFIX + '/2/enable', gotOptions);
+    // Verify that user 2 is enabled.
+    let result = await got(PEOPLE_PREFIX + '/2', gotOptions);
     let person = result.body;
     expect(person.enabled).toBe(true);
 
-    await got.put(PEOPLE_PREFIX + '/2/disable');
-    result = await got(PEOPLE_PREFIX + '/2', {json: true});
+    // Disable user 2.
+    await got.put(PEOPLE_PREFIX + '/2/disable', gotOptions);
+    // Verify that user 2 is disabled.
+    result = await got(PEOPLE_PREFIX + '/2', gotOptions);
     person = result.body;
     expect(person.enabled).toBe(false);
   });
@@ -92,7 +104,7 @@ describe('people-router', () => {
   ): Promise<void> {
     const url = `${PEOPLE_PREFIX}/${id}/${change}`;
     try {
-      await got.put(url);
+      await got.put(url, gotOptions);
       done.fail('expected error when changing enable to current value');
     } catch (e) {
       done(); // got expected error
@@ -118,7 +130,7 @@ describe('people-router', () => {
       lastname: 'Volkmann'
     };
     try {
-      await got.post(url, {body: person, json: true});
+      await got.post(url, {body: person, ...gotOptions});
       done.fail('expected error when creating person with negative age');
     } catch (e) {
       done(); // got expected error
@@ -134,14 +146,14 @@ describe('people-router', () => {
       lastname: 'Volkmann'
     };
     try {
-      await got.post(url, {body: person, json: true});
+      await got.post(url, {body: person, ...gotOptions});
       done.fail('expected error when creating person with invalid first name');
     } catch (e) {
       done(); // got expected error
     }
   });
 
-  test('create person with invalid lirst name', async (done: Function) => {
+  test('create person with invalid first name', async (done: Function) => {
     const url = PEOPLE_PREFIX;
     const person = {
       age: 57,
@@ -150,11 +162,10 @@ describe('people-router', () => {
       lastname: 'volkmann'
     };
     try {
-      await got.post(url, {body: person, json: true});
+      await got.post(url, {body: person, ...gotOptions});
       done.fail('expected error when creating person with invalid last name');
     } catch (e) {
       done(); // got expected error
     }
   });
-  */
 });
