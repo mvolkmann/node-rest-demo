@@ -3,12 +3,10 @@
 // THESE TESTS ARE NOT CURRENTLY WORKING BECAUSE
 // THE LOGIN IN beforeAll is not working!
 
-import cookie from 'cookie';
 import got from 'got';
 
 const URL_PREFIX = 'http://localhost:3001';
 const PEOPLE_PREFIX = URL_PREFIX + '/people';
-const USER_PREFIX = URL_PREFIX + '/user';
 
 describe('people-router', () => {
   const gotOptions = {headers: {}, json: true};
@@ -17,7 +15,7 @@ describe('people-router', () => {
     const body = {username: 'jbrown', password: 'p2', roles: ['admin']};
 
     // Create a user.
-    let res = await got.post(USER_PREFIX, {body, ...gotOptions});
+    let res = await got.post(URL_PREFIX + '/user', {body, ...gotOptions});
     expect(res.statusCode).toBe(200);
 
     // Login.

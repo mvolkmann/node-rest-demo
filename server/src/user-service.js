@@ -40,6 +40,5 @@ export async function deleteUser(username: string): Promise<void> {
 export async function getUser(username: string): Promise<UserType> {
   const sql = 'select * from app_user where username = $1';
   const [user] = await pg.query(sql, username);
-  console.log('user-service.js getUser: user =', user);
   return user;
 }

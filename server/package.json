@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Demonstrates implementing REST services with Express",
   "scripts": {
+    "bench": "npm-run-all dbsetup build _benchmark",
     "build": "babel -q src -d build",
     "dbi": "psql -d demo",
     "dbsetup": "psql -d demo -f ddl.sql",
@@ -15,7 +16,8 @@
     "lint": "eslint --quiet src --ext .js",
     "start": "node build/index.js",
     "start-dev": "babel-watch --message 'restarting' --ignore node_modules -- src/index.js",
-    "test": "npm-run-all dbsetup build jest"
+    "test": "npm-run-all dbsetup build jest",
+    "_benchmark": "node build/benchmark.js"
   },
   "repository": {
     "type": "git",
@@ -56,6 +58,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-watch": "^2.0.7",
+    "benchmark": "^2.1.4",
     "eslint": "^4.19.1",
     "eslint-plugin-flowtype": "^2.49.3",
     "eslint-plugin-html": "^4.0.3",
