@@ -1,7 +1,8 @@
 // @flow
 
 import nodemailer from 'nodemailer';
-import {emailPassword} from '../secrets.json';
+//import {emailPassword} from '../secrets.json';
+const emailPassword = 'wrong';
 
 const from = 'r.mark.volkmann@gmail.com;';
 // emailPassword is a Google "app password".
@@ -14,7 +15,7 @@ const from = 'r.mark.volkmann@gmail.com;';
 // and pressing the "GENERATE" button.
 const transporter = nodemailer.createTransport({
   service: 'gmail',
-  auth: {user: 'r.mark.volkmann@gmail.com', pass: emailPassword}
+  auth: { user: 'r.mark.volkmann@gmail.com', pass: emailPassword }
 });
 
 type EmailType = {
@@ -23,8 +24,8 @@ type EmailType = {
   text: string
 };
 
-export function sendEmail({to, subject, text}: EmailType): void {
-  const data = {from, to, subject, text};
+export function sendEmail({ to, subject, text }: EmailType): void {
+  const data = { from, to, subject, text };
   transporter.sendMail(data, err => {
     if (err) throw new Error(err);
   });
