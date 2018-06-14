@@ -101,11 +101,11 @@ To run all the tests, enter `npm test`.
 - to populate/reset the database
   - restart database instance from the GCP Console if it is stopped
   - `cd server`
-  - `gcloud sql connect node-rest-demo-db --user=postgres < ddl.sql`
+  - `npm run gcp-dbsetup`
 
 - to run the tests against the code in GCP
   - `cd server`
-  - `gcloud sql connect node-rest-demo-db --user=postgres < ddl.sql`
+  - `npm run gcp-test`
 
 ## Code Summary
 
