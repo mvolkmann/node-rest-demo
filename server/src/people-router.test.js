@@ -1,25 +1,27 @@
 // @flow
 
-// THESE TESTS ARE NOT CURRENTLY WORKING BECAUSE
-// THE LOGIN IN beforeAll is not working!
-
 import got from 'got';
 
-const URL_PREFIX = 'http://localhost:3001';
+const { GCP } = process.env;
+console.log('GCP =', GCP);
+
+const URL_PREFIX = GCP ?
+  'https://node-rest-demo.appspot.com' :
+  'http://localhost:3001';
 const PEOPLE_PREFIX = URL_PREFIX + '/people';
 
 describe('people-router', () => {
-  const gotOptions = {headers: {}, json: true};
+  const gotOptions = { headers: {}, json: true };
 
   beforeAll(async () => {
-    const body = {username: 'jbrown', password: 'p2', roles: ['admin']};
+    const body = { username: 'jbrown', password: 'p2', roles: ['admin'] };
 
     // Create a user.
-    let res = await got.post(URL_PREFIX + '/user', {body, ...gotOptions});
+    let res = await got.post(URL_PREFIX + '/user', { body, ...gotOptions });
     expect(res.statusCode).toBe(200);
 
     // Login.
-    res = await got.post(URL_PREFIX + '/login', {body, ...gotOptions});
+    res = await got.post(URL_PREFIX + '/login', { body, ...gotOptions });
     expect(res.statusCode).toBe(204);
     const cookies = res.headers['set-cookie'];
     gotOptions.headers.cookie = cookies.find(cookie =>
@@ -69,7 +71,7 @@ describe('people-router', () => {
       firstname: 'Mark',
       lastname: 'Volkmann'
     };
-    const result = await got.post(url, {body: person, ...gotOptions});
+    const result = await got.post(url, { body: person, ...gotOptions });
     const newPerson = result.body;
     const id = parseInt(newPerson.id, 10);
     expect(id).toBeGreaterThan(0);
@@ -128,7 +130,7 @@ describe('people-router', () => {
       lastname: 'Volkmann'
     };
     try {
-      await got.post(url, {body: person, ...gotOptions});
+      await got.post(url, { body: person, ...gotOptions });
       done.fail('expected error when creating person with negative age');
     } catch (e) {
       done(); // got expected error
@@ -144,7 +146,7 @@ describe('people-router', () => {
       lastname: 'Volkmann'
     };
     try {
-      await got.post(url, {body: person, ...gotOptions});
+      await got.post(url, { body: person, ...gotOptions });
       done.fail('expected error when creating person with invalid first name');
     } catch (e) {
       done(); // got expected error
@@ -160,7 +162,7 @@ describe('people-router', () => {
       lastname: 'volkmann'
     };
     try {
-      await got.post(url, {body: person, ...gotOptions});
+      await got.post(url, { body: person, ...gotOptions });
       done.fail('expected error when creating person with invalid last name');
     } catch (e) {
       done(); // got expected error

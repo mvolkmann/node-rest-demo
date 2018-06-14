@@ -1,8 +1,7 @@
 // @flow
 
 import nodemailer from 'nodemailer';
-//import {emailPassword} from '../secrets.json';
-const emailPassword = 'wrong';
+import { emailPassword } from '../secrets.json';
 
 const from = 'r.mark.volkmann@gmail.com;';
 // emailPassword is a Google "app password".

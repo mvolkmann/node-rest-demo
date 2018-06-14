@@ -91,6 +91,22 @@ To run all the tests, enter `npm test`.
   in the route for a POST to `/login`
 - also see `server/jwt-demo.js`
 
+## Google Cloud Platform
+
+- to deploy
+  - `cd server`
+  - `npm run build`
+  - `gcloud app deploy`
+
+- to populate/reset the database
+  - restart database instance from the GCP Console if it is stopped
+  - `cd server`
+  - `gcloud sql connect node-rest-demo-db --user=postgres < ddl.sql`
+
+- to run the tests against the code in GCP
+  - `cd server`
+  - `gcloud sql connect node-rest-demo-db --user=postgres < ddl.sql`
+
 ## Code Summary
 
 ### `index.js`
